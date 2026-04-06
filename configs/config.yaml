@@ -1,13 +1,12 @@
 # Configuration file for the project
 
-project:
+pipeline:
   name: "microlane"
   version: "1.0.0"
   description: "valuating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars."
 
 data:
   root_dir: data/
-  image_size: [512, 256]
 
   datasets:
     tusimple:
@@ -26,10 +25,13 @@ data:
 models:
   lanenet2:
     name: lanenet2
-    
+    weights: "models/LaneNet2/lanenet2_tusimple_18.pth"
+    img_size: [256, 512]
+
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
-    backbone: resnet34
+    img_size: [288, 800]
+    weights: "models/ufld/ufld.pth"
 
 evaluation:
   metrics:
@@ -41,9 +43,19 @@ evaluation:
   tusimple_metric: true
 
 logging:
+  level: "INFO"  # DEBUG | INFO | WARNING | ERROR
   log_dir: logs/
-  log_interval: 10
+  log_to_file: true
+  log_to_console: true
+  filename_format: "{model}_{dataset}_{timestamp}.log"
 
 inference:
   device: cuda
   confidence_threshold: 0.5
+
+results:
+  base_dir: "results"
+  save_predictions: true
+  save_visualizations: true
+  save_metrics_csv: true
+  overwrite: false
