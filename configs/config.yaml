@@ -1,0 +1,49 @@
+# Configuration file for the project
+
+project:
+  name: "microlane"
+  version: "1.0.0"
+  description: "valuating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars."
+
+data:
+  root_dir: data/
+  image_size: [512, 256]
+
+  datasets:
+    tusimple:
+      enable: True
+      path: data/tusimple/
+      annotation_file: data/tusimple/label_data.json
+  
+  augmentation:
+    horizontal_flip: false
+    random_crop: false
+    color_jitter:
+      brightness: 1
+      contrast: 1
+      saturation: 1
+  
+models:
+  lanenet2:
+    name: lanenet2
+    
+  ultra_fast_lane_detection:
+    name: ultra_fast_lane_detection
+    backbone: resnet34
+
+evaluation:
+  metrics:
+    - accuracy
+    - f1_score
+    - fps
+    - precision
+    - recall
+  tusimple_metric: true
+
+logging:
+  log_dir: logs/
+  log_interval: 10
+
+inference:
+  device: cuda
+  confidence_threshold: 0.5
