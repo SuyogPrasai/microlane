@@ -5,7 +5,7 @@ import numpy as np
 # formatters/lanenet.py
 
 @dataclass
-class LaneNetInput:
+class LaneNet2Input:
     image: np.ndarray        # (H, W, 3) normalized
     binary_mask: np.ndarray  # (H, W) 0/1
     instance_mask: np.ndarray  # (H, W) each lane has a different int id

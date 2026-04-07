@@ -1,6 +1,6 @@
 from typing import Tuple, List
 from microlane.schema.sample import Sample
-from microlane.schema.model_limbs import LaneNetInput
+from microlane.schema.model_limbs import LaneNet2Input
 
 
 class LaneNet2Formatter:
@@ -9,11 +9,10 @@ class LaneNet2Formatter:
         
         pass
     
-    def format(self, samples: List[Sample]) -> List[LaneNetInput]:
+    def format(self, samples: List[Sample]) -> List[LaneNet2Input]:
 
         pass
     
-    def format_one(self, sample: Sample) -> LaneNetInput:
+    def format_one(self, sample: Sample) -> LaneNet2Input:
 
         pass
-    
