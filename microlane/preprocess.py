@@ -9,7 +9,7 @@ import numpy as np
 from pathlib import Path
 from typing import List, Tuple
 
-from utils.datasets.tusimple import TuSimple
+from microlane.datasets.tusimple import TuSimple
 
 class PreProcess():
     """
