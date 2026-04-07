@@ -1,0 +1,18 @@
+from dataclasses import dataclass, field
+from typing import List, Optional
+import numpy as np
+
+# formatters/lanenet.py
+
+@dataclass
+class LaneNetInput:
+    image: np.ndarray        # (H, W, 3) normalized
+    binary_mask: np.ndarray  # (H, W) 0/1
+    instance_mask: np.ndarray  # (H, W) each lane has a different int id
+    
+# formatters/ufld.py
+
+@dataclass  
+class UFLDInput:
+    image: np.ndarray        # (H, W, 3) normalized
+    cls_label: np.ndarray    # (num_lanes, num_row_anchors) classification targets
