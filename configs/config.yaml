@@ -31,7 +31,7 @@ models:
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
     img_size: [288, 800]
-    weights: "models/ufld/ufld.pth"
+    weights: "models/ufld/ulfd_tusimple_18.pth"
 
 evaluation:
   metrics:
