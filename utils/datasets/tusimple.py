@@ -1,3 +1,8 @@
+"""
+Code which helps us work with the TuSimple Dataset localted at data/TuSimple
+"""
+
+
 
 from typing import Tuple, List
 
