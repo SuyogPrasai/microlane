@@ -19,3 +19,4 @@ class LaneNet2():
         
         """
         return [self.infer(item) for item in batch]
+  

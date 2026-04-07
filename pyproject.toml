@@ -1,0 +1,10 @@
+[project]
+name = "microlane"
+version = "0.1.0"
+description = "Self-driving lane detection project"
+authors = [{ name = "Suyog" }]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["."]
