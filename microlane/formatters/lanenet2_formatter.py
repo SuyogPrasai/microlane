@@ -21,7 +21,7 @@ class LaneNet2Formatter:
         image: np.ndarray = sample.image
         orig_h, orig_w = image.shape[:2]
  
-        resized = cv2.resize(image, (W, H)).astype(np.float32) / 255.0
+        resized = cv2.resize(image, (W, H), interpolation=cv2.INTER_LINEAR).astype(np.float32) / 127.5 - 1.0
         
         binary_mask   = np.zeros((orig_h, orig_w), dtype=np.uint8)
         instance_mask = np.zeros((orig_h, orig_w), dtype=np.uint8)
