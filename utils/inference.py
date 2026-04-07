@@ -9,6 +9,8 @@ import os, json
 
 class  Inference():
     
+    
+    # This is the main inferencing class, which will have all the helper functions and properties to do the inferencing
     def __init__(self, model: str, dataset: str) -> None:
         
         self.model = model

@@ -22,11 +22,14 @@ class PreProcess():
         
         self.model = model
         
-    
+    # There would be common dataset format that would work across all types of datasets like TuSimple or CuLane
+    # This would return dataset format which we can feed to inferencing class
     def load_dataset(self):
         
         pass
     
+    
+    # There would make the formatting nescessary for each individual model needs, like for LaneNet, UFLD
     def format_dataset(self):
         
         pass

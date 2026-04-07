@@ -6,6 +6,8 @@ Code which helps us work with the TuSimple Dataset localted at data/TuSimple
 
 from typing import Tuple, List
 
+# This is a common dataset example that can be implemented for all types, right now i have only done for TUsimple
+# Buyt it may be more appropriate to create a Dataset Class and extend it for TuSimple, and add more properties accordingly
 
 class TuSimple():    
     """
