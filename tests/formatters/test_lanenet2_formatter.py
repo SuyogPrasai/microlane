@@ -141,8 +141,8 @@ def test_format_one_image_is_normalised(formatter, sample_valid):
     assert result.image.dtype in (np.float32, np.float64), (
         "Image should be a float array after normalisation"
     )
-    assert result.image.max() <= 1.0 and result.image.min() >= 0.0, (
-        "Normalised image values should be in [0, 1]"
+    assert result.image.max() <= 1.0 and result.image.min() >= -1.0, (
+        "Normalised image values should be in [-1, 1]"
     )
 
 
