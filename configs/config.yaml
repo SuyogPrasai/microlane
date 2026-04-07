@@ -11,8 +11,8 @@ data:
   datasets:
     tusimple:
       enable: True
-      path: data/tusimple/
-      annotation_file: data/tusimple/label_data.json
+      path: data/TuSimple/
+      annotation_file: data/TuSimple/test_label_new.json
   
   augmentation:
     horizontal_flip: false

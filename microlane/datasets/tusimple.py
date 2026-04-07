@@ -27,7 +27,7 @@ class TuSimple():
         self.annotation_file_path = annotation_file_path
         
     
-    def load(self) -> List[Sample]:
+    def load(self, number = 300) -> List[Sample]:
         
         pass
 
