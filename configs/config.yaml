@@ -11,7 +11,7 @@ data:
   datasets:
     tusimple:
       enable: True
-      path: data/TuSimple/TUSimple
+      path: data/TuSimple/TUSimple/
       annotation_file: data/TuSimple/test_label_new.json
   
   augmentation:

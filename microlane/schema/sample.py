@@ -13,3 +13,4 @@ class Sample:
     image: Optional[np.ndarray]  # None until actually loaded into memory
     lanes: List[LaneLine]
     raw_annotation: dict         # keep the original around, useful for debugging
+    
