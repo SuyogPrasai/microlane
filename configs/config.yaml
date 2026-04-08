@@ -11,8 +11,8 @@ data:
   datasets:
     tusimple:
       enable: True
-      path: data/TuSimple/TUSimple/
-      annotation_file: data/TuSimple/test_label_new.json
+      path: data/datasets/TuSimple/TUSimple/
+      annotation_file: data/datasets/TuSimple/test_label_new.json
   
   augmentation:
     horizontal_flip: false
@@ -25,13 +25,13 @@ data:
 models:
   lanenet2:
     name: lanenet2
-    weights: "models/LaneNet2/lanenet2_tusimple_18.pth"
+    weights: "data/models/LaneNet2/lanenet2_tusimple_18.pth"
     img_size: [512, 256]
 
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
     img_size: [288, 800]
-    weights: "models/ufld/ulfd_tusimple_18.pth"
+    weights: "data/models/ufld/ulfd_tusimple_18.pth"
 
 evaluation:
   metrics:
