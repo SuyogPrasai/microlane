@@ -26,6 +26,7 @@ models:
   lanenet2:
     name: lanenet2
     weights: "data/models/LaneNet2/lanenet2_tusimple_18.pth"
+    model_repo: "data/repos/lanenet-lane-detection"
     img_size: [512, 256]
 
   ultra_fast_lane_detection:
