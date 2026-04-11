@@ -27,7 +27,8 @@ models:
     name: lanenet2
     weights: "/home/suyog/assets/weights/LaneNet2_TuSimple/tusimple_lanenet.ckpt.data-00000-of-00001"
     model_repo: "/home/suyog/desktop/testing/lanenet-lane-detection/"
-    img_size: [512, 256]
+    config_location: "microlane/models/lanenet2/config/config.yaml"
+
 
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
