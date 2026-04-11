@@ -11,6 +11,4 @@ class LaneLine:
 class Sample:
     image_path: str
     image: Optional[np.ndarray]  # None until actually loaded into memory
-    lanes: List[LaneLine]
-    raw_annotation: dict         # keep the original around, useful for debugging
-    
+    actual_lanes: List[LaneLine]    

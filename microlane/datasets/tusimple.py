@@ -56,8 +56,7 @@ class TuSimple():
                 sample = Sample(
                     image_path=self.folder_path + data["raw_file"],
                     image=None,
-                    lanes=lanes,
-                    raw_annotation=data,
+                    actual_lanes=lanes,
                 )
 
                 samples.append(sample)

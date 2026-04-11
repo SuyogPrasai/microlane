@@ -22,9 +22,10 @@ class LaneNet2():
     def infer(self, image: LaneNet2Input) -> LanePrediction:
            
         return LanePrediction(
-            lanes=[],
-            confidence=[],
+            predicted_lanes=[],
+            actual_lanes=[],
             image_path="",
+            image=np.zeros((1,1,3))
         )
         
     
