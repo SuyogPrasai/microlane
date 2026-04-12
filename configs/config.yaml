@@ -1,4 +1,5 @@
 # Configuration file for the project
+# Contains the global settings for the pipeline
 
 pipeline:
   name: "microlane"
@@ -28,6 +29,8 @@ models:
     weights: "/home/suyog/assets/weights/LaneNet2_TuSimple/tusimple_lanenet.ckpt.data-00000-of-00001"
     model_repo: "/home/suyog/desktop/testing/lanenet-lane-detection/"
     config_location: "microlane/models/lanenet2/config/config.yaml"
+    container_folder: "/home/suyog/desktop/projects/microlane/microlane/models/lanenet2/lanenet2"
+    image_name: "lanenet2_image:latest"
 
 
   ultra_fast_lane_detection:

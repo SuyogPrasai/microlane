@@ -1,0 +1,24 @@
+# This will host the environment information for the docker container
+# It will also define the identity of the containe 
+# It will also define the python requuirements 
+# Importing the lanenet evaluation code to the container
+
+FROM python:3.6.15-slim
+
+LABEL maintainer="suyog224356@gmail.com"
+LABEL description="Docker container for lane detection using lanenet2"
+LABEL python_version="3.6.15"
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY . .
