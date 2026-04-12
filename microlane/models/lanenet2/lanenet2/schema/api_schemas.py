@@ -12,9 +12,11 @@ class LaneLine:
 class Sample:
     image_path: str
     image: Optional[np.ndarray]  # None until actually loaded into memory
-    actual_lanes: List[LaneLine]  
-
+    actual_lanes: List[LaneLine] 
+    modified: bool = False 
+    
 @dataclass
-class LaneNet2InputSingle:
-    image: np.ndarray        # (H, W, 3) normalized
-    lanes: List[LaneLine]
+class LaneNet2Output:
+    sample: Sample
+    binary_segmentation: np.ndarray  # (H, W) binary mask of lane pixels
+    instance_segmentation: Optional[np.ndarray] = None  # (H, W) instance

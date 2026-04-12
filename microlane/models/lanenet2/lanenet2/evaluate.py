@@ -3,11 +3,11 @@ import numpy as np
 from typing import Tuple, List
 import yaml, time
 
-from microlane.schema.sample import Sample
-from microlane.schema.model_limbs import LaneNet2Input
-from microlane.schema.prediction import LanePrediction
+from schema.api_schemas import Sample
+from schema.api_schemas import LaneNet2Output
 
-from microlane.models.lanenet2.lanenet2.helpers.preprocessing import PreProcessor
+from helpers.preprocessing import PreProcessor
+from engine import LaneNet2Engine
 
 class LaneNet2():
     
@@ -20,19 +20,30 @@ class LaneNet2():
                                 
         self.preprocessor = PreProcessor(target_size=(512, 256))
                              
+        self._engine = LaneNet2Engine(weights_path)
 
     
-    def infer(self, picture: Sample) -> LanePrediction:
+    def infer(self, picture: Sample) -> LaneNet2Output:
         
         # I probably dont need the postprocessing step here since I am creating a unified preprocessing pipeline
                 
-        preprocessd_image = self.preprocessor.process_one(picture)
+        processed_image = self.preprocessor.process(picture)
         
-        return LanePrediction(
-            binary_segmentation=np.zeros((256, 512))
+        if processed_image.image is None:
+            raise ValueError(
+                f"The processed image for sample '{picture.image_path}' is None. "
+                "This should not happen. Please check the preprocessing step."
+            )
+            
+        binary_seg, instance_seg = self._engine.predict(processed_image.image)
+        
+        return LaneNet2Output(
+            sample=picture,
+            binary_segmentation=binary_seg[0],
+            instance_segmentation=instance_seg[0]
         )
     
-    def batch_infer(self, batch: List[Sample]) -> List[LanePrediction]:
+    def batch_infer(self, batch: List[Sample]) -> List[LaneNet2Output]:
         """
         Prediction for a list of inputs
         
