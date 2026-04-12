@@ -19,11 +19,12 @@ class LaneNet2():
         self.image_name = image_name
 
         self.container_manager = ContainerManager(
+            
             port=self.container_port, 
+            
             container_folder=self.container_folder,
+            
             image_name=self.image_name
         )
         
         self.container_manager.initialize_container()
-        
-

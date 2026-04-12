@@ -50,9 +50,11 @@ class LaneNet2():
         """
         return [self.infer(item) for item in batch]
     
-    def _load_config(self, config_path: str):
-        
-        # First Load the Configuation file
-        with open(config_path, "r") as file:
-            return yaml.safe_load(file)
-        
+    def close(self):
+        self._engine.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.close()
