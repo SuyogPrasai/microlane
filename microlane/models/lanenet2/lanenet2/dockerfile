@@ -10,6 +10,7 @@ LABEL description="Docker container for lane detection using lanenet2"
 LABEL python_version="3.6.15"
 
 RUN apt-get update && apt-get install -y \
+    git \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -20,5 +21,10 @@ COPY requirements.txt .
 
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
+
+    
+RUN git clone https://github.com/MaybeShewill-CV/lanenet-lane-detection.git lanenet2
+    
+WORKDIR /app/lanenet2
 
 COPY . .
