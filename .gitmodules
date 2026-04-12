@@ -1,6 +1,0 @@
-[submodule "models/lanenet-lane-detection"]
-	path = models/lanenet_lane_detection
-	url = https://github.com/MaybeShewill-CV/lanenet-lane-detection.git
-[submodule "models/ultra_fast_lane_detection"]
-	path = models/ultra_fast_lane_detection
-	url = https://github.com/cfzd/Ultra-Fast-Lane-Detection
