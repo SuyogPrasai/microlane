@@ -7,9 +7,13 @@ from microlane.schema.sample import LaneLine
 
 @dataclass
 class LanePrediction:
-    # predicted_lanes: List[LaneLine]        # predicted lanes in original image coordinates
-    # actual_lanes: List[LaneLine]
-    # image_path: str              # so you can match back to ground truth
-    # image: np.ndarray
-    
-    binary_segmentation: np.ndarray
+    true_positives: int
+    false_positives: int
+    true_negatives: int
+    false_negatives: int
+    accuracy: float
+    precision: float
+    recall: float
+    f1_score: float
+    image_path: str
+    predicted_lanes: List[LaneLine]

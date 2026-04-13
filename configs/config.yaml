@@ -11,7 +11,6 @@ data:
 
   datasets:
     tusimple:
-      enable: True
       path: /home/suyog/assets/datasets/TuSimple/TUSimple/
       annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_new.json
   

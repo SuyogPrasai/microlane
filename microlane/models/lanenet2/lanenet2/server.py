@@ -53,8 +53,8 @@ def health():
 @app.post("/infer")
 def infer(request: InferRequest):
     try:
-        prediction = model.infer(request.sample) # type: ignore
-        return JSONResponse(content=prediction_to_dict(prediction)) # type: ignore
+        prediction = model.infer(request.sample) 
+        return JSONResponse(content=prediction_to_dict(prediction))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -62,8 +62,8 @@ def infer(request: InferRequest):
 @app.post("/batch_infer")
 def batch_infer(request: BatchInferRequest):
     try:
-        predictions = model.batch_infer(request.samples) # type: ignore
-        return JSONResponse(content=[prediction_to_dict(p) for p in predictions]) # type: ignore
+        predictions = model.batch_infer(request.samples)
+        return JSONResponse(content=[prediction_to_dict(p) for p in predictions])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
