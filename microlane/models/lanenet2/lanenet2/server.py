@@ -5,8 +5,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from schema.sample import Sample
-from schema.prediction import LanePrediction
+from schema.api_schemas import Sample
+from schema.api_schemas import LaneNet2Output
 from evaluate import LaneNet2
 
 class InferRequest(BaseModel):
@@ -23,7 +23,7 @@ class BatchInferRequest(BaseModel):
         arbitrary_types_allowed = True
 
 
-def prediction_to_dict(pred: LanePrediction) -> dict:
+def prediction_to_dict(pred: LaneNet2Output) -> dict:
     result = {}
     for key, val in pred.__dict__.items():
         result[key] = val.tolist() if isinstance(val, np.ndarray) else val
