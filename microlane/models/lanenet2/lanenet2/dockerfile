@@ -28,3 +28,5 @@ RUN git clone https://github.com/MaybeShewill-CV/lanenet-lane-detection.git lane
 WORKDIR /app/lanenet2
 
 COPY . .
+
+CMD ["python", "server.py"]
