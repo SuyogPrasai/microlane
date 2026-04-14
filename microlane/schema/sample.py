@@ -14,3 +14,6 @@ class Sample:
     image: Optional[np.ndarray]  # None until actually loaded into memory
     actual_lanes: List[LaneLine] 
     modified: bool = False 
+
+    def __getitem__(self, key: str):
+        return getattr(self, key)
