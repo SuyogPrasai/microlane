@@ -2,6 +2,8 @@
 import docker, docker.errors
 import os, subprocess
 
+from matplotlib import container
+
 class ContainerManager():
     
     def __init__(self, port: int, container_folder: str, image_name: str) -> None:
@@ -18,7 +20,7 @@ class ContainerManager():
         
     
             
-    def initialize_container(self) -> None:
+    def initialize_container(self):
         
         # First check if an existing image exists then use that, else create a new image 
         
@@ -26,9 +28,32 @@ class ContainerManager():
         
         print(self.container_folder)
         
+        
+        ## Check if image exists, if not build it
+        ## then check if container is running, if not start it and expose it on the specified port
         self.build_image()
         
+        return self.ensure_container_running()
         
+    
+    def ensure_container_running(self):
+    # Check if a container for this image is already running
+        containers = self.client.containers.list(
+            filters={"ancestor": self.image_name, "status": "running"}
+        )
+        if containers:
+            print(f"Container already running: {containers[0].short_id}")
+            return containers[0]
+
+        print(f"Starting new container from '{self.image_name}' on port {self.port}...")
+        container = self.client.containers.run(
+            self.image_name,
+            detach=True,
+            ports={"8080/tcp": self.port},  # adjust internal port as needed
+        )
+        print(f"Container started: {container.short_id}")
+        return container        
+            
     def build_image(self):
         # Check if image already exists — skip build if it does
         try:
