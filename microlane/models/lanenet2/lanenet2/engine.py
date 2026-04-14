@@ -24,6 +24,8 @@ class LaneNet2Engine():
         self._instance_seg_ret = None
 
         self._sess = None
+        
+        self._build_graph()
     
     
     def predict(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:

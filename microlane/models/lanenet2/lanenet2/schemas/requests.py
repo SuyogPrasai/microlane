@@ -19,16 +19,8 @@ class SampleRequest(BaseModel):
     image: Optional[List]
     actual_lanes: List[LaneLineRequest]
 
-    @validator("image")
-    def image_must_be_3d(cls, value):
-        if value is not None:
-            arr = np.array(value)
-            if arr.ndim != 3:
-                raise ValueError(f"image must be 3D (H, W, C), got shape {arr.shape}")
-        return value
-
     def to_sample(self):
-        from schemas.api_schemas import LaneLine, Sample
+        from schemas.api_schema import LaneLine, Sample # type: ignore
         return Sample(
             image_path=self.image_path,
             image=np.array(self.image, dtype="uint8") if self.image is not None else None,
