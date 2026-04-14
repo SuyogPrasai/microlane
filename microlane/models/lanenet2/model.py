@@ -44,6 +44,8 @@ class LaneNet2():
         
         return response
     
+
+    
     
     def sample_to_payload(self, sample: Sample) -> dict:
         return {

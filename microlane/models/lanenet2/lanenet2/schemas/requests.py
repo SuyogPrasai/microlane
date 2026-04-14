@@ -20,7 +20,7 @@ class SampleRequest(BaseModel):
     actual_lanes: List[LaneLineRequest]
 
     def to_sample(self):
-        from schemas.api_schema import LaneLine, Sample # type: ignore
+        from schemas.api_schemas import LaneLine, Sample # type: ignore
         return Sample(
             image_path=self.image_path,
             image=np.array(self.image, dtype="uint8") if self.image is not None else None,

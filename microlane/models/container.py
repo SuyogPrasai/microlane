@@ -1,6 +1,9 @@
 
 import docker, docker.errors
 import os, subprocess
+import time
+import requests as req
+
 
 from matplotlib import container
 
@@ -44,6 +47,8 @@ class ContainerManager():
         if containers:
             print(f"Container already running: {containers[0].short_id}")
             return containers[0]
+        else:
+            time.sleep(2)  # brief pause to ensure image is ready
 
         print(f"Starting new container from '{self.image_name}' on port {self.port}...")
         container = self.client.containers.run(
@@ -52,7 +57,23 @@ class ContainerManager():
             ports={"8000/tcp": self.port},  # adjust internal port as needed
         )
         print(f"Container started: {container.short_id}")
-        return container        
+        self.wait_for_ready()   # <-- blocks until /health returns 200
+        return container
+    
+    def wait_for_ready(self, timeout: int = 30, interval: float = 0.5):
+        url = f"http://localhost:{self.port}/health"
+        deadline = time.time() + timeout
+        print(f"Waiting for container to be ready on port {self.port}...")
+        while time.time() < deadline:
+            try:
+                r = req.get(url, timeout=1)
+                if r.status_code == 200:
+                    print("Container is ready.")
+                    return
+            except req.exceptions.ConnectionError:
+                pass
+            time.sleep(interval)
+        raise TimeoutError(f"Container on port {self.port} not ready after {timeout}s")        
             
     def build_image(self):
         # Check if image already exists — skip build if it does
