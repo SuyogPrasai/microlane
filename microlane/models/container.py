@@ -49,7 +49,7 @@ class ContainerManager():
         container = self.client.containers.run(
             self.image_name,
             detach=True,
-            ports={"8080/tcp": self.port},  # adjust internal port as needed
+            ports={"8000/tcp": self.port},  # adjust internal port as needed
         )
         print(f"Container started: {container.short_id}")
         return container        
