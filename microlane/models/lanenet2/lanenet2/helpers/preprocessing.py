@@ -1,8 +1,7 @@
 from typing import Tuple, List
-from schema.api_schemas import Sample
+from schemas.api_schemas import Sample
 import numpy as np
 import cv2
-
 
 class PreProcessor:
     

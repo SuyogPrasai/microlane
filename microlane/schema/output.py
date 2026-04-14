@@ -3,7 +3,7 @@ from typing import List, Optional
 import numpy as np
 
 from microlane.schema.sample import Sample
-
+ 
 @dataclass
 class LaneNet2Output:
     sample: Sample

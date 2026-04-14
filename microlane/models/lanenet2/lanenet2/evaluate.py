@@ -3,8 +3,8 @@ import numpy as np
 from typing import Tuple, List
 import yaml, time
 
-from schema.api_schemas import Sample
-from schema.api_schemas import LaneNet2Output
+from schemas.api_schemas import Sample
+from schemas.api_schemas import LaneNet2Output
 
 from helpers.preprocessing import PreProcessor
 from engine import LaneNet2Engine
