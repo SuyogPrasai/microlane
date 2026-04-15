@@ -9,7 +9,8 @@ class Sample:
     image: Optional[np.ndarray]  # None until actually loaded into memory
     lanes: List[List[float]]
     h_samples: List[float]
-            
+    
+    blur: float = 0.0
     brightness: float = 1.0
     rotation: float = 0.0
     zoom: float = 1.0

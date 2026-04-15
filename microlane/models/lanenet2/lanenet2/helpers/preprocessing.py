@@ -18,11 +18,15 @@ class PreProcessor:
         W, H = self.target_size
         image: np.ndarray = sample.image
          
-        resized = cv2.resize(image, (W, H), interpolation=cv2.INTER_LINEAR).astype(np.float32) / 127.5 - 1.0
- 
+        resized = cv2.resize(image, (W, H), interpolation=cv2.INTER_LINEAR).astype(np.float32) / 127.5 - 1.0 # type: ignore ( c++ code badly typed so error )
+            
         return Sample(
-            image=resized,
             image_path=sample.image_path,
-            actual_lanes=sample.actual_lanes,
-            modified=True
+            image=resized,
+            lanes=np.array(sample.lanes),
+            h_samples=np.array(sample.h_samples),
+            brightness=sample.brightness,
+            blur=sample.blur,
+            zoom=sample.zoom,
+            rotation=sample.rotation
         )

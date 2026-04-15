@@ -5,6 +5,7 @@ from typing import Tuple
 from lanenet_model import lanenet # type: ignore
 from local_utils.config_utils import parse_config_utils # type: ignore
 from local_utils.log_util import init_logger # type: ignore
+import time
 
 class LaneNet2Engine():
     
@@ -14,7 +15,6 @@ class LaneNet2Engine():
         
         self.CFG = parse_config_utils.lanenet_cfg
         
-       
         # Initializing the initial parameters for the engine
          
         self._input_tensor = None
@@ -28,7 +28,7 @@ class LaneNet2Engine():
         self._build_graph()
     
     
-    def predict(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def predict(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray, float]:
         """
         Run a single forward pass.
 
@@ -44,6 +44,8 @@ class LaneNet2Engine():
         if self._sess is None:
             
             raise RuntimeError("Session is not initialised. Call _build_graph() first.")
+        
+        t_start = time.time()
 
         binary_seg, instance_seg = self._sess.run(
             
@@ -53,7 +55,9 @@ class LaneNet2Engine():
 
         )
         
-        return binary_seg, instance_seg
+        t_cost = time.time() - t_start
+        
+        return binary_seg, instance_seg, t_cost
     
     def close(self) -> None:
         """
@@ -99,7 +103,9 @@ class LaneNet2Engine():
         
         
         with tf.variable_scope(name_or_scope='moving_avg'):
+
             variable_averages = tf.train.ExponentialMovingAverage(self.CFG.SOLVER.MOVING_AVE_DECAY)
+
             variables_to_restore = variable_averages.variables_to_restore()
             
         saver = tf.train.Saver(variables_to_restore)

@@ -1,6 +1,8 @@
 from typing import List, Optional
 import numpy as np
 from pydantic import BaseModel, validator
+from schemas.api_schemas import Sample # type: ignore
+
 
 class LaneLineRequest(BaseModel):
     x_coordinates: List[float]
@@ -16,18 +18,26 @@ class LaneLineRequest(BaseModel):
 
 class SampleRequest(BaseModel):
     image_path: str
-    image: Optional[List]
-    actual_lanes: List[LaneLineRequest]
+    image: List
+    lanes: List
+    h_samples: List
+      
+    brightness: float = 1.0
+    rotation: float = 0.0
+    zoom: float = 1.0
+    blur: float = 0.0
+
 
     def to_sample(self):
-        from schemas.api_schemas import LaneLine, Sample # type: ignore
         return Sample(
             image_path=self.image_path,
-            image=np.array(self.image, dtype="uint8") if self.image is not None else None,
-            actual_lanes=[
-                LaneLine(x_coordinates=lane.x_coordinates, y_coordinates=lane.y_coordinates)
-                for lane in self.actual_lanes
-            ],
+            image=np.array(self.image, dtype="uint8"),
+            lanes=np.array(self.lanes),
+            h_samples=np.array(self.h_samples),
+            brightness=self.brightness,
+            blur=self.blur,
+            zoom=self.zoom,
+            rotation=self.rotation
         )
 
 class InferRequest(BaseModel):
