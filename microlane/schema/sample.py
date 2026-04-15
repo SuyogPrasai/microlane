@@ -15,10 +15,13 @@ class Sample:
     actual_lanes: List[LaneLine] 
     modified: bool = False
     
+    blur: float = 0.0
     brightness: float = 1.0
     rotation: float = 0.0
     zoom: float = 1.0
-    blur: float = 0.0
 
     def __getitem__(self, key: str):
         return getattr(self, key)
+    
+    def __setitem__(self, key: str, value):
+        return setattr(self, key, value)
