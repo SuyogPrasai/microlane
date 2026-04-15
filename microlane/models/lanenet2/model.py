@@ -10,7 +10,7 @@ import requests
 
 from microlane.models.container import ContainerManager
 from microlane.schema.sample import Sample
-from microlane.schema.output import LaneNet2Output
+from microlane.schema.output import ModelPrediction
 
 class LaneNet2():
     
@@ -44,18 +44,17 @@ class LaneNet2():
         
         return response
     
-
-    
     
     def sample_to_payload(self, sample: Sample) -> dict:
         return {
-            "image_path": sample.image_path,                          # string → fine as-is
-            "actual_lanes": [                                          # List[LaneLine] → list of dicts
-                {
-                    "x_coordinates": lane.x_coordinates,
-                    "y_coordinates": lane.y_coordinates,
-                }
-                for lane in sample.actual_lanes
-            ],
-            "image": sample.image.tolist() if sample.image is not None else None,  # ndarray → nested list
+            "image_path": sample.image_path,
+            
+            "lanes": sample.lanes,
+            "h_samples": sample.h_samples,
+            
+            "image": sample.image.tolist() if sample.image is not None else None,  # ndarray → nested list,
+            "blur": sample.blur,
+            "brightness": sample.brightness,
+            "zoom": sample.zoom,
+            "rotation": sample.rotation,
         }

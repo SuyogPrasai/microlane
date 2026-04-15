@@ -4,7 +4,7 @@ Code which helps us work with the TuSimple Dataset localted at data/TuSimple
 
 import os, json
 from typing import Tuple, List
-from microlane.schema.sample import Sample, LaneLine
+from microlane.schema.sample import Sample
 import numpy as np
 from pathlib import Path
 import cv2
@@ -45,18 +45,11 @@ class TuSimple():
 
                 data: dict = json.loads(line)
 
-                lanes = [
-                    LaneLine(
-                        x_coordinates=lane_xs,
-                        y_coordinates=data["h_samples"],
-                    )
-                    for lane_xs in data["lanes"]
-                ]
-
                 sample = Sample(
                     image_path=self.folder_path + data["raw_file"],
+                    lanes=data["lanes"],
+                    h_samples=data["h_samples"],
                     image=None,
-                    actual_lanes=lanes,
                 )
 
                 samples.append(sample)

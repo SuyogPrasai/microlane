@@ -5,7 +5,7 @@ import numpy as np
 from microlane.schema.sample import Sample
  
 @dataclass
-class LaneNet2Output:
+class ModelPrediction:
     sample: Sample
-    binary_segmentation: np.ndarray  # (H, W) binary mask of lane pixels
-    instance_segmentation: Optional[np.ndarray] = None  # (H, W) instance
+    lanes: List[List[float]]
+    inference_time: float
