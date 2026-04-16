@@ -17,7 +17,7 @@ class ExperimentEvaluate:
     def __init__(self, experiment_name) -> None:
         self.experiment_name = experiment_name
         self.file_name = "prediction.json"
-        self.folder_dir = "results/" + self.generate_folder_name()
+        self.folder_dir = "results/testing/" + self.generate_folder_name()
 
     def store_prediction(self, prediction: ModelPrediction) -> None:
         if not os.path.exists(self.folder_dir):
@@ -94,8 +94,7 @@ class ExperimentEvaluate:
         axes[1].set_title("Augmented", fontsize=12)
         axes[1].axis("off")
 
-        # Bug fix: axes[2] needs an image background too
-        axes[2].imshow(img_arr)
+        axes[2].imshow(modified_image)
         axes[2].set_title("Predictions", fontsize=12)
         axes[2].axis("off")
 
