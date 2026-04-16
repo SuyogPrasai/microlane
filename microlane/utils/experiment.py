@@ -85,7 +85,9 @@ class ExperimentEvaluate:
         img = Image.open(prediction.sample.image_path)
         img_arr = np.array(img)
 
-        fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+        modified_image = prediction.sample.image
+
+        fig, axes = plt.subplots(1, 3, figsize=(24, 6))
         fig.suptitle(
             f"Inference time: {prediction.inference_time:.4f}s  |  "
             f"File: {'/'.join(prediction.sample.image_path.split('/')[-3:])}",
@@ -97,9 +99,13 @@ class ExperimentEvaluate:
         axes[0].set_title("Original", fontsize=12)
         axes[0].axis("off")
 
-        axes[1].imshow(img_arr)
-        axes[1].set_title("Lane overlay", fontsize=12)
+        axes[1].imshow(modified_image)
+        axes[1].set_title("Augmented", fontsize=12)
         axes[1].axis("off")
+
+        axes[2].imshow(modified_image)
+        axes[2].set_title("Lane overlay", fontsize=12)
+        axes[2].axis("off")
 
         legend_patches = []
 

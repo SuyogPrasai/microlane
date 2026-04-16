@@ -48,7 +48,7 @@ class LaneNet2():
         postprocess_result = postprocessor.postprocess(
             binary_seg_result=binary_seg[0],
             instance_seg_result=instance_seg[0],
-            source_image=picture.image,
+            source_image=picture.image.copy(),
             with_lane_fit=True, # Need to change don't know what does but true is default on the repo
             data_source='tusimple'
         )

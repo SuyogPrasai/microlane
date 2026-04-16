@@ -15,22 +15,16 @@ data:
       annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_new.json
   
   augmentation:
-    horizontal_flip: false
-    random_crop: false
-    color_jitter:
-      brightness: 1
-      contrast: 1
-      saturation: 1
+    blur: [0.0, 1.0]
+    zoom: [1.0, 3]
+    rotation: [0.0, 360.0]
+    brightness: [0.0, 1.0]
   
 models:
   lanenet2:
     name: lanenet2
-    weights: "/home/suyog/assets/weights/LaneNet2_TuSimple/tusimple_lanenet.ckpt"
-    model_repo: "/home/suyog/desktop/testing/lanenet-lane-detection/"
-    config_location: "microlane/models/lanenet2/config/config.yaml"
     container_folder: "/home/suyog/desktop/projects/microlane/microlane/models/lanenet2/lanenet2"
     image_name: "lanenet2_image:latest"
-
 
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
