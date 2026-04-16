@@ -17,7 +17,7 @@ def prediction_to_dict(pred: ModelPrediction) -> dict:
         },
         
         "lanes": np.array(pred.lanes).tolist(),
-        "inference_time": pred.inference_time 
+        "run_time": pred.run_time 
     }
 
 

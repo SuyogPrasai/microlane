@@ -8,4 +8,4 @@ from microlane.schema.sample import Sample
 class ModelPrediction:
     sample: Sample
     lanes: List[List[float]]
-    inference_time: float
+    run_time: float

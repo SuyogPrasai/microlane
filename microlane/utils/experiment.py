@@ -29,7 +29,7 @@ class ExperimentEvaluate:
             "lanes": prediction.lanes,
             "h_samples": prediction.sample.h_samples,
             "raw_file": prediction.sample.image_path,
-            "inference_time": prediction.inference_time,
+            "run_time": prediction.run_time,
         }
 
         if os.path.exists(end_file_path):
@@ -80,7 +80,7 @@ class ExperimentEvaluate:
 
         fig, axes = plt.subplots(1, 3, figsize=(24, 6))
         fig.suptitle(
-            f"Inference time: {prediction.inference_time:.4f}s  |  "
+            f"Inference time: {prediction.run_time:.4f}s  |  "
             f"File: {'/'.join(prediction.sample.image_path.split('/')[-3:])}",
             fontsize=11,
             color="gray",

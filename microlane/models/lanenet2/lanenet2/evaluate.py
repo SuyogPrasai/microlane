@@ -108,7 +108,7 @@ class LaneNet2():
         return ModelPrediction(
             sample=picture,
             lanes=lanes,
-            inference_time=t_cost
+            run_time=t_cost
         )
     
     def batch_infer(self, batch: List[Sample]) -> List[ModelPrediction]:

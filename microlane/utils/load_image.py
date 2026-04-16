@@ -39,5 +39,5 @@ def parse_prediction(response) -> ModelPrediction:
             rotation=prediction['sample']['rotation']
         ),
         lanes=prediction['lanes'],
-        inference_time=prediction['inference_time']
+        run_time=prediction['run_time']
     )
