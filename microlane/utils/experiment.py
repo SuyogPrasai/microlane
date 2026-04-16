@@ -50,15 +50,6 @@ class ExperimentEvaluate:
         prediction: ModelPrediction,
         show: bool = False,
     ) -> str:
-        """Render original + lane-overlay side-by-side and save to the experiment folder.
-
-        Args:
-            prediction: The model output to visualise.
-            show:       If True, call plt.show() after saving (useful in notebooks).
-
-        Returns:
-            The full path to the saved PNG file.
-        """
         if not os.path.exists(self.folder_dir):
             os.mkdir(self.folder_dir)
 
@@ -103,8 +94,9 @@ class ExperimentEvaluate:
         axes[1].set_title("Augmented", fontsize=12)
         axes[1].axis("off")
 
-        axes[2].imshow(modified_image)
-        axes[2].set_title("Lane overlay", fontsize=12)
+        # Bug fix: axes[2] needs an image background too
+        axes[2].imshow(img_arr)
+        axes[2].set_title("Predictions", fontsize=12)
         axes[2].axis("off")
 
         legend_patches = []
@@ -116,14 +108,16 @@ class ExperimentEvaluate:
             for x, y in zip(lane, prediction.sample.h_samples):
                 if x == -2:
                     if xs:
-                        axes[1].plot(xs, ys, color=color, linewidth=2)
+                        # Bug fix: lane lines belong on axes[2], not axes[1]
+                        axes[2].plot(xs, ys, color=color, linewidth=2)
                         xs, ys = [], []
                 else:
                     xs.append(x)
                     ys.append(y)
 
             if xs:
-                axes[1].plot(xs, ys, color=color, linewidth=2)
+                # Bug fix: flush the final segment to axes[2]
+                axes[2].plot(xs, ys, color=color, linewidth=2)
 
             valid = [
                 (x, y)
@@ -132,11 +126,11 @@ class ExperimentEvaluate:
             ]
             if valid:
                 vx, vy = zip(*valid)
-                axes[1].scatter(vx, vy, color=color, s=10, zorder=5)
+                axes[2].scatter(vx, vy, color=color, s=10, zorder=5)
 
             legend_patches.append(mpatches.Patch(color=color, label=f"Lane {li + 1}"))
 
-        axes[1].legend(
+        axes[2].legend(
             handles=legend_patches,
             loc="upper left",
             fontsize=9,
@@ -153,7 +147,7 @@ class ExperimentEvaluate:
 
         plt.close(fig)
         return save_path
-
+    
     def generate_folder_name(self) -> str:
         experiment_name = self.experiment_name.lower().replace(" ", "_")
         timezone = pytz.timezone("Asia/Kathmandu")
