@@ -12,15 +12,15 @@ def load_image_from_sample(sample: Sample) -> Sample:
 
     sample.image = cv2.imread(sample.image_path)
 
-    auggie = Augmentor()
+    # auggie = Augmentor()
 
-    sample = auggie.blur(sample)
+    # sample = auggie.blur(sample)
 
-    sample = auggie.zoom(sample)
+    # sample = auggie.zoom(sample)
 
-    sample = auggie.rotation(sample)
+    # sample = auggie.rotation(sample)
     
-    sample = auggie.brightness(sample)
+    # sample = auggie.brightness(sample)
 
     return sample
 
