@@ -5,12 +5,19 @@ from microlane.schema.sample import Sample
 from microlane.schema.output import ModelPrediction
 from microlane.augmentors.augmentor import Augmentor
 
+import matplotlib.pyplot as plt
+
+
 def load_image_from_sample(sample: Sample) -> Sample:
 
     if sample.image is not None:
         return sample
 
-    sample.image = cv2.imread(sample.image_path)
+    image = cv2.imread(sample.image_path)
+    
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # type: ignore
+    
+    sample.image = image
 
     # auggie = Augmentor()
 

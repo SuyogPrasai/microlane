@@ -50,6 +50,7 @@ class ExperimentEvaluate:
         prediction: ModelPrediction,
         show: bool = False,
     ) -> str:
+        
         if not os.path.exists(self.folder_dir):
             os.mkdir(self.folder_dir)
 
@@ -97,6 +98,10 @@ class ExperimentEvaluate:
         axes[2].imshow(modified_image)
         axes[2].set_title("Predictions", fontsize=12)
         axes[2].axis("off")
+        
+        h, w = np.array(modified_image).shape[:2] # pyright: ignore[reportOptionalMemberAccess]
+        axes[2].set_xlim(0, w)
+        axes[2].set_ylim(h, 0)  # Note: inverted because image y-axis goes top-dow
 
         legend_patches = []
 
@@ -110,9 +115,9 @@ class ExperimentEvaluate:
                         # Bug fix: lane lines belong on axes[2], not axes[1]
                         axes[2].plot(xs, ys, color=color, linewidth=2)
                         xs, ys = [], []
-                else:
-                    xs.append(x)
-                    ys.append(y)
+                    elif 0 <= x < w and 0 <= y < h:  # only plot in-bounds points
+                        xs.append(x)
+                        ys.append(y)
 
             if xs:
                 # Bug fix: flush the final segment to axes[2]
