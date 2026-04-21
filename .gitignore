@@ -212,3 +212,4 @@ data/**
 results/**
 weights/
 weightrs/**
+.hidden-items.json

@@ -3,5 +3,21 @@
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "venv": true,
+        "venv/**": true,
+        "configs": true,
+        "configs/**": true,
+        ".vscode": true,
+        ".vscode/**": true,
+        ".pytest_cache": true,
+        ".pytest_cache/**": true,
+        ".hidden-items.json": true
+    }
 }

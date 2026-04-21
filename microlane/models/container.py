@@ -37,7 +37,24 @@ class ContainerManager():
         self.build_image()
         
         return self.ensure_container_running()
+    
+    def restart_container(self):
+        # Check if a container is running or not
+        containers = self.client.containers.list(
+            filters={"ancestor": self.image_name, "status": "running"}
+        )
         
+        # If running, stop that container
+        if containers:
+            container = containers[0]
+            print(f"Stopping running container: {container.short_id}")
+            container.stop()
+            print(f"Container {container.short_id} stopped.")
+        else:
+            print("No running container found, starting fresh.")
+    
+        # Start a new instance of that container
+        return self.ensure_container_running()
     
     def ensure_container_running(self):
     # Check if a container for this image is already running
