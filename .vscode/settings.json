@@ -12,8 +12,6 @@
         "**/Thumbs.db": true,
         "venv": true,
         "venv/**": true,
-        "configs": true,
-        "configs/**": true,
         ".vscode": true,
         ".vscode/**": true,
         ".pytest_cache": true,

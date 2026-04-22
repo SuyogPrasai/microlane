@@ -48,7 +48,11 @@ class ContainerManager():
         if containers:
             container = containers[0]
             print(f"Stopping running container: {container.short_id}")
+            
             container.stop()
+            
+            container.remove()
+            
             print(f"Container {container.short_id} stopped.")
         else:
             print("No running container found, starting fresh.")

@@ -17,7 +17,7 @@ class ExperimentEvaluate:
     def __init__(self, experiment_name) -> None:
         self.experiment_name = experiment_name
         self.file_name = "prediction.json"
-        self.folder_dir = "results/testing/" + self.generate_folder_name()
+        self.folder_dir = "results/testing/" + self.generate_folder_name() + "/inference"
 
     def store_prediction(self, prediction: ModelPrediction) -> None:
         if not os.path.exists(self.folder_dir):
