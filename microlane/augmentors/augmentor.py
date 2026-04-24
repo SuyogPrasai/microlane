@@ -76,3 +76,36 @@ class Augmentor():
         sample.image = cv2.convertScaleAbs(image, alpha=sample.brightness, beta=0)
 
         return sample
+    
+
+    def jitter(self, sample: Sample) -> Sample:
+        if sample.image is None or sample.jitter <= 0.0:
+            return sample
+
+        image: np.ndarray = sample.image
+        jitter_value = sample.jitter  # 0.0 – 1.0
+
+        # Kernel size controls how strong the shake blur is
+        kernel_size = max(3, int(jitter_value * 30))
+        if kernel_size % 2 == 0:
+            kernel_size += 1
+
+        # Random angle simulates unpredictable shake direction
+        angle = np.random.uniform(0, 360)
+        angle_rad = np.deg2rad(angle)
+
+        # Build motion blur kernel along the random angle
+        kernel = np.zeros((kernel_size, kernel_size))
+        center = kernel_size // 2
+        for i in range(kernel_size):
+            offset = i - center
+            x = center + int(round(offset * np.cos(angle_rad)))
+            y = center + int(round(offset * np.sin(angle_rad)))
+            if 0 <= x < kernel_size and 0 <= y < kernel_size:
+                kernel[y, x] = 1.0
+
+        kernel /= kernel.sum()
+
+        sample.image = cv2.filter2D(image, -1, kernel)
+
+        return sample

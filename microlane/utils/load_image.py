@@ -27,7 +27,9 @@ def load_image_from_sample(sample: Sample) -> Sample:
 
     # sample = auggie.rotation(sample)
     
-    sample = auggie.brightness(sample)
+    # sample = auggie.brightness(sample)
+    
+    sample = auggie.jitter(sample)
 
     return sample
 

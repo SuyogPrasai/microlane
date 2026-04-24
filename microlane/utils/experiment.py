@@ -17,11 +17,12 @@ class ExperimentEvaluate:
     def __init__(self, experiment_name) -> None:
         self.experiment_name = experiment_name
         self.file_name = "prediction.json"
-        self.folder_dir = "results/testing/" + self.generate_folder_name() + "/inference"
+        self.folder_dir = "results/testing/" + self.generate_folder_name()
+        self.inference_dir = self.folder_dir + "/inference"
 
     def store_prediction(self, prediction: ModelPrediction) -> None:
-        if not os.path.exists(self.folder_dir):
-            os.mkdir(self.folder_dir)
+
+        os.makedirs(self.folder_dir, exist_ok=True)
 
         end_file_path = self.folder_dir + "/" + self.file_name
 
@@ -51,13 +52,12 @@ class ExperimentEvaluate:
         show: bool = False,
     ) -> str:
         
-        if not os.path.exists(self.folder_dir):
-            os.mkdir(self.folder_dir)
+        os.makedirs(self.inference_dir, exist_ok=True)
 
         pattern = re.compile(r"visualization_(\d+)\.png")
 
         existing = [
-            f for f in os.listdir(self.folder_dir)
+            f for f in os.listdir(self.inference_dir)
             if f.startswith("visualization_") and f.endswith(".png")
         ]
 
@@ -70,7 +70,7 @@ class ExperimentEvaluate:
         viz_index = max(indices, default=-1) + 1
 
         save_path = os.path.join(
-            self.folder_dir,
+            self.inference_dir,
             f"visualization_{viz_index:04d}.png"
         )
 

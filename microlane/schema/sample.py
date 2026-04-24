@@ -14,6 +14,7 @@ class Sample:
     brightness: float = 1.0
     rotation: float = 0.0
     zoom: float = 1.0
+    jitter: float = 0.0
 
     def __getitem__(self, key: str):
         return getattr(self, key)

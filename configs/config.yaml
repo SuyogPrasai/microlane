@@ -19,6 +19,7 @@ data:
     zoom: [1.0, 3]
     rotation: [0.0, 360.0]
     brightness: [0.0, 1.0]
+    jitter: [0.0, 0.1]
   
 models:
   lanenet2:
