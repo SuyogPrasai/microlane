@@ -1,0 +1,8 @@
+opencv-python
+tqdm
+tensorboard
+addict
+scikit-learn
+pathspec
+pytorch
+cudatoolkit=10.1
