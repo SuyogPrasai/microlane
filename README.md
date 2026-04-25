@@ -8,7 +8,7 @@ We have used a custom model evaluation pipline to make evaluatoins of different 
 
 The pipeline can use multiple datasets easily by using code to infer "Samples" fromt these datasets, which is a common object that can be processed by other modules of the pipepline.
 
-We can easily apply different filetrs like brightness, rotation, zooming, and blur filters and test data based on that. As such we would be able to draw consistent comparison between models.
+We can easily apply different filetrs like lighting, rotation, zooming, and blur filters and test data based on that. As such we would be able to draw consistent comparison between models.
 
 ![alt text](image.png)
 

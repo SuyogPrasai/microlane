@@ -13,7 +13,7 @@ def prediction_to_dict(pred: ModelPrediction) -> dict:
             "blur": pred.sample.blur,
             "zoom": pred.sample.zoom,
             "rotation": pred.sample.rotation,
-            "brightness": pred.sample.brightness,
+            "lighting": pred.sample.lighting,
         },
         
         "lanes": np.array(pred.lanes).tolist(),

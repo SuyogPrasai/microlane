@@ -22,7 +22,7 @@ class SampleRequest(BaseModel):
     lanes: List
     h_samples: List
       
-    brightness: float = 1.0
+    lighting: float = 1.0
     rotation: float = 0.0
     zoom: float = 1.0
     blur: float = 0.0
@@ -34,7 +34,7 @@ class SampleRequest(BaseModel):
             image=np.array(self.image, dtype="uint8"),
             lanes=np.array(self.lanes),
             h_samples=np.array(self.h_samples),
-            brightness=self.brightness,
+            lighting=self.lighting,
             blur=self.blur,
             zoom=self.zoom,
             rotation=self.rotation

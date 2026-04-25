@@ -54,7 +54,7 @@ class LaneNet2():
             
             "image": sample.image.tolist() if sample.image is not None else None,  # ndarray → nested list,
             "blur": sample.blur,
-            "brightness": sample.brightness,
+            "lighting": sample.lighting,
             "zoom": sample.zoom,
             "rotation": sample.rotation,
         }

@@ -1,25 +1,24 @@
 # Configuration file for the project
 # Contains the global settings for the pipeline
+# This contains the settings for how the experiment will be setup
 
 pipeline:
-  name: "microlane"
+  name: "Microlane"
   version: "1.0.0"
-  description: "valuating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars."
+  description: "Evaluating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars"
 
 data:
-  root_dir: /home/suyog/assets/datasets/
-
   datasets:
     tusimple:
       path: /home/suyog/assets/datasets/TuSimple/TUSimple/
       annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_new.json
   
   augmentation:
+    motion_blur: [0.0, 0.1]
+    lighting: [0.0, 1.0]
     blur: [0.0, 1.0]
     zoom: [1.0, 3]
     rotation: [0.0, 360.0]
-    brightness: [0.0, 1.0]
-    motion_blur: [0.0, 0.1]
   
 models:
   lanenet2:

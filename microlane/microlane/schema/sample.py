@@ -11,7 +11,7 @@ class Sample:
     h_samples: List[float]
     
     blur: float = 0.0
-    brightness: float = 1.0
+    lighting: float = 1.0
     rotation: float = 0.0
     zoom: float = 1.0
     motion_blur: float = 0.0

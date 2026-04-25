@@ -27,7 +27,7 @@ def load_image_from_sample(sample: Sample) -> Sample:
 
     # sample = auggie.rotation(sample)
     
-    # sample = auggie.brightness(sample)
+    # sample = auggie.lighting(sample)
     
     sample = auggie.motion_blur(sample)
 
@@ -43,7 +43,7 @@ def parse_prediction(response) -> ModelPrediction:
             h_samples=prediction['sample']['h_samples'],
             lanes=prediction['sample']['lanes'],
             blur=prediction['sample']['blur'],
-            brightness=prediction['sample']['brightness'],
+            lighting=prediction['sample']['lighting'],
             zoom=prediction['sample']['zoom'],
             rotation=prediction['sample']['rotation']
         ),

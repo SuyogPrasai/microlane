@@ -67,13 +67,13 @@ class Augmentor():
 
         return sample
 
-    def brightness(self, sample: Sample) -> Sample:
-        if sample.image is None or sample.brightness == 1.0:
+    def lighting(self, sample: Sample) -> Sample:
+        if sample.image is None or sample.lighting == 1.0:
             return sample
 
         image: np.ndarray = sample.image
 
-        sample.image = cv2.convertScaleAbs(image, alpha=sample.brightness, beta=0)
+        sample.image = cv2.convertScaleAbs(image, alpha=sample.lighting, beta=0)
 
         return sample
     

@@ -10,7 +10,7 @@ class Sample:
     lanes: np.ndarray
     h_samples: np.ndarray
       
-    brightness: float = 1.0
+    lighting: float = 1.0
     rotation: float = 0.0
     zoom: float = 1.0
     blur: float = 0.0
