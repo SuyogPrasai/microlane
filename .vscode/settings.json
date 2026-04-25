@@ -10,8 +10,6 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        "venv": true,
-        "venv/**": true,
         ".vscode": true,
         ".vscode/**": true,
         ".pytest_cache": true,

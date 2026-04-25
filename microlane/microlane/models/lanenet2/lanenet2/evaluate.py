@@ -4,11 +4,11 @@ from typing import Tuple, List
 import yaml, time
 
 
-from microlane.models.lanenet2.lanenet2.schemas.api_schemas import Sample
-from microlane.models.lanenet2.lanenet2.schemas.api_schemas import ModelPrediction
+from schemas.api_schemas import Sample
+from schemas.api_schemas import ModelPrediction
 
-from microlane.models.lanenet2.lanenet2.helpers.preprocessing import PreProcessor
-from microlane.models.lanenet2.lanenet2.engine import LaneNet2Engine
+from helpers.preprocessing import PreProcessor
+from engine import LaneNet2Engine
 
 from lanenet_model import lanenet_postprocess # type: ignore
 from local_utils.config_utils import parse_config_utils # type: ignore

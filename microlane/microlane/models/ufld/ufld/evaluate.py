@@ -1,11 +1,11 @@
 import numpy as np
 from typing import List
 
-from microlane.models.ufld.ufld.schemas.api_schemas import Sample
-from microlane.models.ufld.ufld.schemas.api_schemas import ModelPrediction
+from schemas.api_schemas import Sample
+from schemas.api_schemas import ModelPrediction
 
-from microlane.models.ufld.ufld.helpers.preprocessing import PreProcessor
-from microlane.models.ufld.ufld.engine import UFLDEngine
+from helpers.preprocessing import PreProcessor
+from engine import UFLDEngine
 
 class UFLD():
     

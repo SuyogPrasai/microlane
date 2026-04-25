@@ -1,5 +1,5 @@
 from typing import Tuple, List
-from microlane.models.ufld.ufld.schemas.api_schemas import Sample
+from schemas.api_schemas import Sample
 import numpy as np
 import cv2
 

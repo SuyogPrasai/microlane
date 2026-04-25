@@ -1,10 +1,33 @@
 [project]
 name = "microlane"
 version = "0.1.0"
-description = "Self-driving lane detection project"
-authors = [{ name = "Suyog" }]
+description = "Evaluating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars"
+authors = [
+    {name = "suyog prasai",email = "suyog224356@gmail.com"}
+]
+license = "MIT"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
+dependencies = [
+    "docker (>=7.1.0,<8.0.0)",
+    "pytz (>=2026.1.post1,<2027.0)",
+    "pyyaml (>=6.0.3,<7.0.0)",
+    "numpy (>=2.4.4,<3.0.0)",
+    "pillow (>=12.2.0,<13.0.0)",
+    "tqdm (>=4.67.3,<5.0.0)",
+    "matplotlib (>=3.10.9,<4.0.0)",
+    "opencv-python (>=4.13.0.92,<5.0.0.0)"
+]
 
-[tool.setuptools.packages.find]
-where = ["."]
+
+[tool.poetry]
+packages = [{include = "microlane", from = "microlane"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ipykernel (>=7.2.0,<8.0.0)"
+]

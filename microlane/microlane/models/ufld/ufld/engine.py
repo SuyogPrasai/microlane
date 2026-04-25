@@ -57,7 +57,7 @@ class UFLDEngine():
 
         self.net: parsingNet | None = None
         
-        self._img_transforms: transforCompose | None = None
+        self._img_transforms: transforms.Compose | None = None
 
         self._build_graph()
 
@@ -125,13 +125,14 @@ class UFLDEngine():
         }
     
         self.net.load_state_dict(compatible_state_dict, strict=False) # type: ignore
+        
         self.net.eval() # type: ignore
 
-        self._img_transforms = transforCompose(
+        self._img_transforms = transforms.Compose(
             [
-                transforResize((self._NET_H, self._NET_W)),
-                transforToTensor(),
-                transforNormalize(
+                transforms.Resize((self._NET_H, self._NET_W)),
+                transforms.ToTensor(),
+                transforms.Normalize(
                     mean=(0.485, 0.456, 0.406),
                     std=(0.229, 0.224, 0.225),
                 ),

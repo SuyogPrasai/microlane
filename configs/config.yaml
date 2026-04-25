@@ -23,12 +23,12 @@ data:
 models:
   lanenet2:
     name: lanenet2
-    container_folder: "/home/suyog/desktop/projects/microlane/microlane/models/lanenet2/lanenet2"
+    container_folder: "/home/suyog/desktop/projects/microlane/microlane/microlane/models/lanenet2/lanenet2"
     image_name: "lanenet2_image:latest"
 
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
-    container_folder: "/home/suyog/desktop/projects/microlane/microlane/models/ufld/ufld"
+    container_folder: "/home/suyog/desktop/projects/microlane/microlane/microlane/models/ufld/ufld"
     image_name: "ufld_image:latest"
   
 evaluation:

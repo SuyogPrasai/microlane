@@ -211,5 +211,5 @@ __marimo__/
 data/**
 results/**
 weights/
-weightrs/**
-.hidden-itejson
+weights/**
+.hidden-items.json

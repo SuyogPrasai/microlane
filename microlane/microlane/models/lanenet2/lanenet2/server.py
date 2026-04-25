@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from microlane.models.lanenet2.lanenet2.evaluate import LaneNet2
-from microlane.models.lanenet2.lanenet2.routers.inference import router
+from evaluate import LaneNet2
+from routers.inference import router
 
 app = FastAPI(title="LaneNet2")
 app.include_router(router)

@@ -1,7 +1,6 @@
 import numpy as np
-from microlane.models.lanenet2.lanenet2.schemas.api_schemas import ModelPrediction
-from microlane.models.lanenet2.lanenet2.schemas.requests import SampleRequest
-
+from schemas.api_schemas import ModelPrediction
+from schemas.requests import SampleRequest
 
 def prediction_to_dict(pred: ModelPrediction) -> dict:
     return {

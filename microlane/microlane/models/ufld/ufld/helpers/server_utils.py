@@ -1,6 +1,6 @@
 import numpy as np
-from microlane.models.ufld.ufld.schemas.api_schemas import ModelPrediction
-from microlane.models.ufld.ufld.schemas.requests import SampleRequest
+from schemas.api_schemas import ModelPrediction
+from schemas.requests import SampleRequest
 
 
 def prediction_to_dict(pred: ModelPrediction) -> dict:

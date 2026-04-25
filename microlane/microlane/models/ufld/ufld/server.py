@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from microlane.models.ufld.ufld.evaluate import UFLD
-from microlane.models.ufld.ufld.routers.inference import router
+from evaluate import UFLD
+from routers.inference import router
 
 app = FastAPI(title="UFLD")
 app.include_router(router)

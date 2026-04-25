@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
-from microlane.models.ufld.ufld.schemas.requests import InferRequest
-from microlane.models.ufld.ufld.helpers.server_utils import prediction_to_dict, sample_request_to_dict
+from schemas.requests import InferRequest
+from helpers.server_utils import prediction_to_dict, sample_request_to_dict
 
 router = APIRouter()
 

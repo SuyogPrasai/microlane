@@ -1,7 +1,7 @@
 from typing import List, Optional
 import numpy as np
 from pydantic import BaseModel, validator
-from microlane.models.lanenet2.lanenet2.schemas.api_schemas import Sample # type: ignore
+from schemas.api_schemas import Sample # type: ignore
 
 
 class LaneLineRequest(BaseModel):
