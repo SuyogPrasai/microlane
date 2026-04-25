@@ -14,3 +14,12 @@ We can easily apply different filetrs like lighting, rotation, zooming, and blur
 
 UFLD uses pytorch
 Lanenet2 uses tensorflow
+
+Steps to perform for installing
+
+clone the repo
+initialize the python version using pyenv
+actiavte the virtual environment
+import all the weights
+pip upgrade
+pip install from requirements
