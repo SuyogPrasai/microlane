@@ -29,7 +29,7 @@ def load_image_from_sample(sample: Sample) -> Sample:
     
     # sample = auggie.brightness(sample)
     
-    sample = auggie.jitter(sample)
+    sample = auggie.motion_blur(sample)
 
     return sample
 

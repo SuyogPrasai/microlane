@@ -78,15 +78,15 @@ class Augmentor():
         return sample
     
 
-    def jitter(self, sample: Sample) -> Sample:
-        if sample.image is None or sample.jitter <= 0.0:
+    def motion_blur(self, sample: Sample) -> Sample:
+        if sample.image is None or sample.motion_blur <= 0.0:
             return sample
 
         image: np.ndarray = sample.image
-        jitter_value = sample.jitter  # 0.0 – 1.0
+        motion_blur_value = sample.motion_blur  # 0.0 – 1.0
 
         # Kernel size controls how strong the shake blur is
-        kernel_size = max(3, int(jitter_value * 30))
+        kernel_size = max(3, int(motion_blur_value * 30))
         if kernel_size % 2 == 0:
             kernel_size += 1
 
