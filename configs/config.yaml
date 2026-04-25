@@ -29,9 +29,9 @@ models:
 
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
-    img_size: [288, 800]
-    weights: "/home/suyog/assets/weights/UFLD_TuSimple/ulfd_tusimple_18.pth"
-
+    container_folder: "/home/suyog/desktop/projects/microlane/microlane/models/ufld/ufld"
+    image_name: "ufld_image:latest"
+  
 evaluation:
   metrics:
     - accuracy

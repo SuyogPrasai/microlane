@@ -11,3 +11,6 @@ The pipeline can use multiple datasets easily by using code to infer "Samples" f
 We can easily apply different filetrs like brightness, rotation, zooming, and blur filters and test data based on that. As such we would be able to draw consistent comparison between models.
 
 ![alt text](image.png)
+
+UFLD uses pytorch
+Lanenet2 uses tensorflow

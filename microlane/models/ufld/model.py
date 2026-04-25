@@ -12,7 +12,7 @@ from microlane.models.container import ContainerManager
 from microlane.schema.sample import Sample
 from microlane.schema.output import ModelPrediction
 
-class LaneNet2():
+class UFLD():
     
     def __init__(self, container_folder: str, image_name: str, port = 8000) -> None:
         
@@ -32,7 +32,6 @@ class LaneNet2():
         )
         
         self.container_manager.initialize_container()
-        
 
     def predict(self, sample: Sample):
         
