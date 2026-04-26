@@ -14,11 +14,12 @@ COLORS = ['#FFD700', '#00E5FF', '#FF4081', '#69FF47', '#FF6D00', '#E040FB']
 
 class ExperimentEvaluate:
 
-    def __init__(self, experiment_name) -> None:
+    def __init__(self, experiment_name, save: bool = True) -> None:
         self.experiment_name = experiment_name
         self.file_name = "prediction.json"
         self.folder_dir = "../results/testing/" + self.generate_folder_name()
         self.inference_dir = self.folder_dir + "/inference"
+        self.save = save
 
     def store_prediction(self, prediction: ModelPrediction) -> None:
 
@@ -52,7 +53,8 @@ class ExperimentEvaluate:
         show: bool = False,
     ) -> str:
         
-        os.makedirs(self.inference_dir, exist_ok=True)
+        if self.save:
+            os.makedirs(self.inference_dir, exist_ok=True)
 
         pattern = re.compile(r"visualization_(\d+)\.png")
 
@@ -144,7 +146,9 @@ class ExperimentEvaluate:
         )
 
         plt.tight_layout()
-        fig.savefig(save_path, dpi=150, bbox_inches="tight")
+        
+        if self.save:
+            fig.savefig(save_path, dpi=150, bbox_inches="tight")
 
         if show:
             plt.show()
