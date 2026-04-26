@@ -33,7 +33,7 @@ class Raw():
             raise FileNotFoundError("The annotation file path provided does not exist")
         
     
-    def load_with_annotation(self, number=300) -> List[Sample]:
+    def load(self, number=300) -> List[Sample]:
         samples = []
 
         with open(self.annotation_file_path, "r") as f:

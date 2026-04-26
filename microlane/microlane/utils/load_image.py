@@ -21,13 +21,13 @@ def load_image_from_sample(sample: Sample) -> Sample:
 
     auggie = Augmentor()
 
-    # sample = auggie.blur(sample)
+    sample = auggie.blur(sample)
 
-    # sample = auggie.zoom(sample)
+    sample = auggie.zoom(sample)
 
-    # sample = auggie.rotation(sample)
+    sample = auggie.rotation(sample)
     
-    # sample = auggie.lighting(sample)
+    sample = auggie.lighting(sample)
     
     sample = auggie.motion_blur(sample)
 

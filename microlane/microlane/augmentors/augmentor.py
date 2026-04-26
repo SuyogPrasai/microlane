@@ -68,15 +68,18 @@ class Augmentor():
         return sample
 
     def lighting(self, sample: Sample) -> Sample:
-        if sample.image is None or sample.lighting == 1.0:
+        if sample.image is None or sample.lighting == 0.0:
             return sample
 
         image: np.ndarray = sample.image
 
-        sample.image = cv2.convertScaleAbs(image, alpha=sample.lighting, beta=0)
+        # remap -1→1 to 0→2 (alpha range for convertScaleAbs)
+        alpha = sample.lighting + 1.0
+
+        sample.image = cv2.convertScaleAbs(image, alpha=alpha, beta=0)
 
         return sample
-    
+        
 
     def motion_blur(self, sample: Sample) -> Sample:
         if sample.image is None or sample.motion_blur <= 0.0:

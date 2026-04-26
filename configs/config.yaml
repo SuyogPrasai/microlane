@@ -15,7 +15,7 @@ data:
   
   augmentation:
     motion_blur: [0.0, 0.1]
-    lighting: [0.0, 1.0]
+    lighting: [-1.0, 1.0]
     blur: [0.0, 1.0]
     zoom: [1.0, 3]
     rotation: [0.0, 360.0]
@@ -39,21 +39,3 @@ evaluation:
     - precision
     - recall
   tusimple_metric: true
-
-logging:
-  level: "INFO"  # DEBUG | INFO | WARNING | ERROR
-  log_dir: logs/
-  log_to_file: true
-  log_to_console: true
-  filename_format: "{model}_{dataset}_{timestamp}.log"
-
-inference:
-  device: cuda
-  confidence_threshold: 0.5
-
-results:
-  base_dir: "results"
-  save_predictions: true
-  save_visualizations: true
-  save_metrics_csv: true
-  overwrite: false

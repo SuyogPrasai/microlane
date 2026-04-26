@@ -14,10 +14,10 @@ COLORS = ['#FFD700', '#00E5FF', '#FF4081', '#69FF47', '#FF6D00', '#E040FB']
 
 class ExperimentEvaluate:
 
-    def __init__(self, experiment_name, save: bool = True) -> None:
+    def __init__(self, experiment_name, output_dir: str,  save: bool = True) -> None:
         self.experiment_name = experiment_name
         self.file_name = "prediction.json"
-        self.folder_dir = "../results/testing/" + self.generate_folder_name()
+        self.folder_dir = output_dir + "/" + self.generate_folder_name()
         self.inference_dir = self.folder_dir + "/inference"
         self.save = save
 
