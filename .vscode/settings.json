@@ -13,7 +13,6 @@
         ".vscode": true,
         ".vscode/**": true,
         ".pytest_cache": true,
-        ".pytest_cache/**": true,
-        ".hidden-items.json": true
+        ".pytest_cache/**": true
     }
 }
