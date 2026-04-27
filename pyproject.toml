@@ -27,7 +27,10 @@ dependencies = [
 
 
 [tool.poetry]
-packages = [{include = "microlane", from = "microlane"}]
+packages = [{include = "microlane", from = "microlane"},
+            {include = "scripts"}
+
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -37,3 +40,6 @@ build-backend = "poetry.core.masonry.api"
 dev = [
     "ipykernel (>=7.2.0,<8.0.0)"
 ]
+
+[tool.poetry.scripts]
+microlane = "scripts.microlane:main"
