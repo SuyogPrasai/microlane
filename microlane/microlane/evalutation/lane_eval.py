@@ -1,19 +1,6 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
-import ujson as json
 import os
-
-
-def normalize_path(p):
-    """
-    Normalize file paths so GT and predictions match.
-    Extracts path starting from 'test_set/' if present.
-    """
-    p = p.replace('\\', '/')
-    if 'test_set/' in p:
-        return p[p.index('test_set/'):]
-    return os.path.basename(p)
-
 
 class LaneEval(object):
     lr = LinearRegression()
@@ -81,68 +68,3 @@ class LaneEval(object):
             fp / len(pred) if len(pred) > 0 else 0.,
             fn / max(min(len(gt), 4.), 1.)
         )
-
-    @staticmethod
-    def bench_one_submit(pred_file, gt_file):
-        try:
-            json_pred = [json.loads(line) for line in open(pred_file).readlines()]
-        except BaseException:
-            raise Exception('Fail to load json file of the prediction.')
-
-        json_gt = [json.loads(line) for line in open(gt_file).readlines()]
-
-        if len(json_gt) != len(json_pred):
-            raise Exception('We do not get the predictions of all the test tasks')
-
-        # Normalize GT keys
-        gts = {normalize_path(l['raw_file']): l for l in json_gt}
-
-        accuracy, fp, fn = 0., 0., 0.
-
-        for pred in json_pred:
-            if 'raw_file' not in pred or 'lanes' not in pred or 'run_time' not in pred:
-                raise Exception('raw_file or lanes or run_time not in some predictions.')
-
-            raw_file = normalize_path(pred['raw_file'])  # Normalize prediction path
-
-            pred_lanes = pred['lanes']
-            run_time = pred['run_time']
-
-            if raw_file not in gts:
-                raise Exception(
-                    'Prediction path does not match GT after normalization: {}'.format(raw_file)
-                )
-
-            gt = gts[raw_file]
-            gt_lanes = gt['lanes']
-            y_samples = gt['h_samples']
-
-            try:
-                a, p, n = LaneEval.bench(pred_lanes, gt_lanes, y_samples, run_time)
-            except BaseException:
-                raise Exception('Format of lanes error.')
-
-            accuracy += a
-            fp += p
-            fn += n
-
-        num = len(gts)
-
-        return json.dumps([
-            {'name': 'Accuracy', 'value': accuracy / num, 'order': 'desc'},
-            {'name': 'FP', 'value': fp / num, 'order': 'asc'},
-            {'name': 'FN', 'value': fn / num, 'order': 'asc'}
-        ])
-
-
-if __name__ == '__main__':
-    import sys
-    try:
-        if len(sys.argv) != 3:
-            raise Exception('Invalid input arguments')
-
-        print(LaneEval.bench_one_submit(sys.argv[1], sys.argv[2]))
-
-    except Exception as e:
-        print(str(e))
-        sys.exit(1)

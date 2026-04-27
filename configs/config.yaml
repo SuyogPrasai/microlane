@@ -11,7 +11,7 @@ data:
   datasets:
     tusimple:
       path: /home/suyog/assets/datasets/TuSimple/TUSimple/
-      annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_new.json
+      annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_path_normalised.json
   
   augmentation:
     motion_blur: [0.0, 0.1]
