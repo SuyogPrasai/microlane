@@ -2,7 +2,7 @@ import click, json
 from pathlib import Path
 from scripts.core.evaluate import evaluate_scenario
 from scripts.core.visualization import draw_evaluation_graphs
-
+from scripts.core.results import load_results
 
 @click.command()
 @click.option('--path', '-p', required=True, help='Path to the scenario folder to evaluate')
@@ -31,7 +31,8 @@ def evaluate(ctx: click.Context, path: str, save: bool) -> None:
     
         # Store overall average results along with the top 5 and bottom 5 performing scenarios
         
-        # results.json
+        load_results(output_file) # Load the results and store the summary
+        
 
         draw_graphs = click.confirm("Do you want to draw the evaluation graphs?", default=True)
         
