@@ -7,7 +7,7 @@ Evaluating how well modern lane detection models hold up when deployed on small-
 | Model | Framework | Link |
 |---|---|---|
 | LaneNet | TensorFlow | [GitHub](https://github.com/MaybeShewill-CV/lanenet-lane-detection) |
-| Ultra Fast Lane Detection | PyTorch | — |
+| Ultra Fast Lane Detection | PyTorch | [Github](https://github.com/cfzd/Ultra-Fast-Lane-Detection#) |
 | ConvLSTM-based DNN | Custom architecture | — |
 
 ## Evaluation Pipeline
