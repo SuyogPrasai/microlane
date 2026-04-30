@@ -1,25 +1,43 @@
 # Microlane
 
-Evaluating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars. We benchmark LaneNet, Ultra Fast Lane Detection, and a ConvLSTM-based DNN against the TuSimple and CULane datasets, then test them on a custom RC car footage dataset under real-world edge conditions.
+Evaluating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars. Models are benchmarked against TuSimple and CULane datasets, then tested on custom RC car footage under real-world edge conditions.
 
-LaneNet Link: https://github.com/MaybeShewill-CV/lanenet-lane-detection
+## Models
 
-We have used a custom model evaluation pipline to make evaluatoins of different models and datsets for lane detction.
+| Model | Framework | Link |
+|---|---|---|
+| LaneNet | TensorFlow | [GitHub](https://github.com/MaybeShewill-CV/lanenet-lane-detection) |
+| Ultra Fast Lane Detection | PyTorch | — |
+| ConvLSTM-based DNN | Custom architecture | — |
 
-The pipeline can use multiple datasets easily by using code to infer "Samples" fromt these datasets, which is a common object that can be processed by other modules of the pipepline.
+## Evaluation Pipeline
 
-We can easily apply different filetrs like lighting, rotation, zooming, and blur filters and test data based on that. As such we would be able to draw consistent comparison between models.
+A custom model evaluation pipeline runs comparisons across models and datasets. Datasets are normalized into a common `Sample` object so all pipeline modules can process them uniformly.
 
-![alt text](image.png)
+**Supported filters:** Lighting · Rotation · Zoom · Blur
 
-UFLD uses pytorch
-Lanenet2 uses tensorflow
+![Pipeline diagram](image.png)
 
-Steps to perform for installing
+## Setup
 
-clone the repo
-initialize the python version using pyenv
-actiavte the virtual environment
-import all the weights
-pip upgrade
-pip install from requirements
+```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd microlane
+
+# 2. Initialize Python version
+pyenv install
+pyenv local
+
+# 3. Activate the virtual environment
+source .venv/bin/activate
+
+# 4. Import model weights
+# (place weights in the appropriate directory as described in the docs)
+
+# 5. Upgrade pip
+pip install --upgrade pip
+
+# 6. Install dependencies
+pip install -r requirements.txt
+```

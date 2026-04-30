@@ -121,6 +121,59 @@ def print_table(runs: list[dict], metrics: list[str]) -> None:
     click.echo()
 
 
+def save_table(runs: list[dict], metrics: list[str], save_path: Path) -> None:
+    """Save the runs table to a CSV or Excel file based on the file extension."""
+    try:
+        import pandas as pd
+    except ImportError:
+        click.echo("Error: pandas is required for --save. Run: pip install pandas openpyxl")
+        return
+
+    rows = []
+    for r in sorted(runs, key=lambda x: (x["dataset"], x["model"], x["condition"])):
+        row = {
+            "dataset": r["dataset"],
+            "model": r["model"],
+            "condition": r["condition"],
+            "samples": r["sample_count"],
+        }
+        for m in metrics:
+            val = r["summary"].get(m)
+            row[METRIC_LABELS.get(m, m)] = val
+        rows.append(row)
+
+    df = pd.DataFrame(rows)
+    suffix = save_path.suffix.lower()
+
+    if suffix == ".csv":
+        df.to_csv(save_path, index=False)
+        click.echo(f"  Saved CSV → {save_path}")
+    elif suffix in (".xlsx", ".xls", ".excel"):
+        try:
+            import openpyxl  # noqa: F401
+        except ImportError:
+            click.echo("Error: openpyxl is required for Excel export. Run: pip install openpyxl")
+            return
+
+        # Rename .excel → .xlsx if needed (Excel can't open .excel extension)
+        if suffix in (".xls", ".excel"):
+            save_path = save_path.with_suffix(".xlsx")
+            click.echo(f"  Note: Saving as .xlsx instead of {suffix}")
+
+        with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
+            df.to_excel(writer, index=False, sheet_name="Results")
+
+            # Auto-fit column widths
+            ws = writer.sheets["Results"]
+            for col in ws.columns:
+                max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in col)
+                ws.column_dimensions[col[0].column_letter].width = min(max_len + 4, 40)
+
+        click.echo(f"  Saved Excel → {save_path}")
+    else:
+        click.echo(f"Error: Unsupported file extension '{suffix}'. Use .csv or .xlsx")
+
+
 # ── Plotting ─────────────────────────────────────────────────────────────────
 
 COLORS = [
@@ -243,6 +296,12 @@ def plot_metric(
     default=None,
     help="Save plots to this directory, organised by dataset/model/condition",
 )
+@click.option(
+    "--save", "-s",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Save results table to a file. Supports .csv and .xlsx e.g. --save results.csv",
+)
 @click.pass_context
 def compare(
     ctx: click.Context,
@@ -252,6 +311,7 @@ def compare(
     condition: tuple[str, ...],
     metric: tuple[str, ...],
     plot: Path | None,
+    save: Path | None,
 ) -> None:
     """
     Compare evaluated runs from progress.json across models and conditions.
@@ -260,7 +320,9 @@ def compare(
       compare --model lanenet2\n
       compare --condition normal motion_blur\n
       compare --model lanenet2 ufld --condition normal camera_shake --metric f1 accuracy\n
-      compare --dataset tusimple --save
+      compare --dataset tusimple --plot ./plots\n
+      compare --dataset tusimple --save results.csv\n
+      compare --dataset tusimple --save results.xlsx
     """
     progress_data = load_progress(progress)
 
@@ -273,6 +335,10 @@ def compare(
 
     # Print terminal table
     print_table(runs, metrics)
+
+    # Save table to file if requested
+    if save:
+        save_table(runs, metrics, save)
 
     # Determine group/split axes for plots
     unique_models = list(dict.fromkeys(r["model"] for r in runs))
