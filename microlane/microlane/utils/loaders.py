@@ -12,7 +12,9 @@ def load_dataset(dataset: str, config: dict, sample_number: int):
         )
     elif dataset == "raw":
         ds = Raw(
-            folder_path=config['data']['datasets']['raw']['path']
+            folder_path=config['data']['datasets']['raw']['path'],
+            annotation=True,
+            annotation_file_path=config['data']['datasets']['raw']['annotation_file']
         )
     else:
         raise ValueError(f"Unknown dataset '{dataset}'. Choose from: tusimple, raw")

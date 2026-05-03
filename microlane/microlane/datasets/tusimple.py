@@ -46,7 +46,7 @@ class TuSimple():
                 data: dict = json.loads(line)
 
                 sample = Sample(
-                    image_path=self.folder_path + data["raw_file"],
+                    image_path=data["raw_file"],
                     lanes=data["lanes"],
                     h_samples=data["h_samples"],
                     image=None,

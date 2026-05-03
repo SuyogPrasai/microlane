@@ -12,6 +12,10 @@ data:
     tusimple:
       path: /home/suyog/assets/datasets/TuSimple/TUSimple/
       annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_path_normalised.json
+    
+    raw:
+      path: /home/suyog/desktop/projects/microlane/results/13-minute-sampling/
+      annotation_file: /home/suyog/desktop/projects/microlane/results/13-minute-sampling/annotations.json
   
   augmentation:
     motion_blur: [0.0, 0.1]

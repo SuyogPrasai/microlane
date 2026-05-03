@@ -27,27 +27,41 @@ from scripts.core.results import load_results
     is_flag=True,
     help="Draw graphs for runs missing them, even if evaluation.json already exists",
 )
+@click.option(
+    "--graph-re",
+    "-gr",
+    is_flag=True,
+    help="Regenerate graphs for all runs, even if they already exist",
+)
+@click.option(
+    "--light-theme",
+    "-lt",
+    is_flag=True,
+    help="Generate graphs in light theme",
+)
 @click.pass_context
 def assess(
     ctx: click.Context,
     progress: Path,
     save: bool,
     graphs: bool,
+    graph_re: bool,
+    light_theme: bool,
 ) -> None:
     """
     Read progress.json and:
       - Evaluate runs missing evaluation.json (requires --save to persist)
       - Draw graphs for runs missing them when --graphs is passed
+      - Regenerate graphs for all runs when --graph-re is passed
+      - Use light theme for graphs when --light-theme is passed
     """
-    annotation_path = Path(
-        ctx.obj["config"]["data"]["datasets"]["tusimple"]["annotation_file"]
-    )
+    datasets_config = ctx.obj["config"]["data"]["datasets"]
 
     with open(progress) as f:
         progress_data = json.load(f)
 
-    missing_eval: list[tuple[str, Path]] = []   # needs evaluation
-    missing_graphs: list[tuple[str, Path]] = []  # has evaluation, needs graphs
+    missing_eval: list[tuple[str, Path, str]] = []  # needs evaluation
+    missing_graphs: list[tuple[str, Path]] = []      # has evaluation, needs graphs
 
     index = progress_data.get("index", {})
     for dataset, models in index.items():
@@ -60,23 +74,28 @@ def assess(
                     counts = run_data.get("counts", {})
 
                     if "missing evaluation.json" in issues:
-                        missing_eval.append((label, run_dir / "prediction.json"))
-                    elif graphs:
-                        # Has evaluation but graphs are missing
+                        missing_eval.append((label, run_dir / "prediction.json", dataset))
+                    elif graphs or graph_re:
                         no_distribution = counts.get("distribution_plots", 0) == 0
                         no_progression = counts.get("progression_plots", 0) == 0
-                        if no_distribution or no_progression:
+                        if no_distribution or no_progression or graph_re:
                             missing_graphs.append((label, run_dir / "evaluation.json"))
 
     # ── Evaluate missing runs ────────────────────────────────────────────────
     if missing_eval:
         click.echo(f"Found {len(missing_eval)} run(s) missing evaluation.json:\n")
-        for label, _ in missing_eval:
+        for label, _, _ in missing_eval:
             click.echo(f"  • {label}")
         click.echo()
 
-        for label, prediction_path in missing_eval:
+        for label, prediction_path, dataset in missing_eval:
             click.echo(f"Evaluating: {label}")
+
+            if dataset not in datasets_config:
+                click.echo(f"  ✗ Dataset '{dataset}' not found in config, skipping.\n")
+                continue
+
+            annotation_path = Path(datasets_config[dataset]["annotation_file"])
 
             if not prediction_path.exists():
                 click.echo(f"  ✗ prediction.json not found at {prediction_path}, skipping.\n")
@@ -104,9 +123,9 @@ def assess(
             except Exception as e:
                 click.echo(f"  ⚠ load_results failed: {e}")
 
-            if graphs:
+            if graphs or graph_re:
                 try:
-                    draw_evaluation_graphs(output_file)
+                    draw_evaluation_graphs(output_file, light_theme=light_theme)
                     click.echo(f"  ✓ Graphs drawn.")
                 except Exception as e:
                     click.echo(f"  ⚠ draw_evaluation_graphs failed: {e}")
@@ -115,10 +134,14 @@ def assess(
     else:
         click.echo("No runs missing evaluation.json.")
 
-    # ── Draw graphs for runs that already have evaluation but no graphs ──────
-    if graphs:
+    # ── Draw graphs for runs that already have evaluation but no/outdated graphs ──
+    if graphs or graph_re:
         if missing_graphs:
-            click.echo(f"\nFound {len(missing_graphs)} run(s) missing graphs:\n")
+            if graph_re:
+                click.echo(f"\nRegenerating graphs for {len(missing_graphs)} run(s):\n")
+            else:
+                click.echo(f"\nFound {len(missing_graphs)} run(s) missing graphs:\n")
+
             for label, _ in missing_graphs:
                 click.echo(f"  • {label}")
             click.echo()
@@ -131,7 +154,7 @@ def assess(
                     continue
 
                 try:
-                    draw_evaluation_graphs(evaluation_path)
+                    draw_evaluation_graphs(evaluation_path, light_theme=light_theme)
                     click.echo(f"  ✓ Graphs drawn.\n")
                 except Exception as e:
                     click.echo(f"  ⚠ draw_evaluation_graphs failed: {e}\n")

@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 import matplotlib
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -12,14 +11,29 @@ import numpy as np
 ALL_METRICS = ["accuracy", "f1", "precision", "recall", "fp", "fn", "run_time"]
 
 METRIC_LABELS = {
-    "accuracy": "Accuracy",
-    "f1": "F1 Score",
+    "accuracy":  "Accuracy",
+    "f1":        "F1 Score",
     "precision": "Precision",
-    "recall": "Recall",
-    "fp": "FPR",
-    "fn": "FNR",
-    "run_time": "Run Time (s)",
+    "recall":    "Recall",
+    "fp":        "FPR",
+    "fn":        "FNR",
+    "run_time":  "Run Time (s)",
 }
+
+# ── Multi-value option helper ────────────────────────────────────────────────
+
+def _split_values(ctx, param, value):
+    """
+    Allow space- or comma-separated values for a multiple=True option.
+    e.g. --metric f1 accuracy  OR  --metric f1,accuracy  OR  --metric f1 --metric accuracy
+    all produce the same result: ('f1', 'accuracy')
+    """
+    result = []
+    for v in value:
+        for part in v.replace(",", " ").split():
+            result.append(part)
+    return tuple(result)
+
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -55,11 +69,11 @@ def collect_runs(
                     if "evaluation" not in run_data:
                         continue
                     runs.append({
-                        "dataset": dataset,
-                        "model": model,
-                        "condition": condition,
-                        "run_id": run_id,
-                        "summary": run_data["evaluation"]["summary"],
+                        "dataset":      dataset,
+                        "model":        model,
+                        "condition":    condition,
+                        "run_id":       run_id,
+                        "summary":      run_data["evaluation"]["summary"],
                         "sample_count": run_data["evaluation"]["sample_count"],
                     })
 
@@ -78,11 +92,10 @@ def print_table(runs: list[dict], metrics: list[str]) -> None:
         click.echo("No evaluated runs match the given filters.")
         return
 
-    # Column widths
-    model_w = max(len(r["model"]) for r in runs) + 2
-    cond_w = max(len(r["condition"]) for r in runs) + 2
-    dataset_w = max(len(r["dataset"]) for r in runs) + 2
-    metric_w = 12
+    model_w   = max(len(r["model"])     for r in runs) + 2
+    cond_w    = max(len(r["condition"]) for r in runs) + 2
+    dataset_w = max(len(r["dataset"])   for r in runs) + 2
+    metric_w  = 12
 
     header_parts = [
         "Dataset".ljust(dataset_w),
@@ -93,7 +106,7 @@ def print_table(runs: list[dict], metrics: list[str]) -> None:
     for m in metrics:
         header_parts.append(METRIC_LABELS.get(m, m).rjust(metric_w))
 
-    sep = "─" * (dataset_w + model_w + cond_w + 8 + metric_w * len(metrics) + len(metrics) + 4)
+    sep    = "─" * (dataset_w + model_w + cond_w + 8 + metric_w * len(metrics) + len(metrics) + 4)
     header = "  ".join(header_parts)
 
     click.echo()
@@ -102,8 +115,8 @@ def print_table(runs: list[dict], metrics: list[str]) -> None:
     click.echo(sep)
 
     for r in sorted(runs, key=lambda x: (x["dataset"], x["model"], x["condition"])):
-        summary = r["summary"]
-        row_parts = [
+        summary    = r["summary"]
+        row_parts  = [
             r["dataset"].ljust(dataset_w),
             r["model"].ljust(model_w),
             r["condition"].ljust(cond_w),
@@ -132,17 +145,17 @@ def save_table(runs: list[dict], metrics: list[str], save_path: Path) -> None:
     rows = []
     for r in sorted(runs, key=lambda x: (x["dataset"], x["model"], x["condition"])):
         row = {
-            "dataset": r["dataset"],
-            "model": r["model"],
+            "dataset":   r["dataset"],
+            "model":     r["model"],
             "condition": r["condition"],
-            "samples": r["sample_count"],
+            "samples":   r["sample_count"],
         }
         for m in metrics:
             val = r["summary"].get(m)
             row[METRIC_LABELS.get(m, m)] = val
         rows.append(row)
 
-    df = pd.DataFrame(rows)
+    df     = pd.DataFrame(rows)
     suffix = save_path.suffix.lower()
 
     if suffix == ".csv":
@@ -155,15 +168,12 @@ def save_table(runs: list[dict], metrics: list[str], save_path: Path) -> None:
             click.echo("Error: openpyxl is required for Excel export. Run: pip install openpyxl")
             return
 
-        # Rename .excel → .xlsx if needed (Excel can't open .excel extension)
         if suffix in (".xls", ".excel"):
             save_path = save_path.with_suffix(".xlsx")
             click.echo(f"  Note: Saving as .xlsx instead of {suffix}")
 
         with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
             df.to_excel(writer, index=False, sheet_name="Results")
-
-            # Auto-fit column widths
             ws = writer.sheets["Results"]
             for col in ws.columns:
                 max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in col)
@@ -185,21 +195,14 @@ COLORS = [
 def plot_metric(
     runs: list[dict],
     metric: str,
-    group_by: str,        # "model" or "condition"
-    split_by: str,        # the other one
+    group_by: str,
+    split_by: str,
     save_dir: Path,
 ) -> None:
-    """
-    One grouped bar chart per metric.
-    x-axis = group_by values, grouped bars = split_by values.
-    """
-    # Gather unique group/split values preserving encounter order
-    groups = list(dict.fromkeys(r[group_by] for r in runs))
-    splits = list(dict.fromkeys(r[split_by] for r in runs))
-
+    groups   = list(dict.fromkeys(r[group_by] for r in runs))
+    splits   = list(dict.fromkeys(r[split_by] for r in runs))
     n_groups = len(groups)
     n_splits = len(splits)
-
     bar_width = 0.8 / n_splits
     x = np.arange(n_groups)
 
@@ -253,7 +256,6 @@ def plot_metric(
     ax.spines["right"].set_visible(False)
 
     fig.tight_layout()
-
     save_dir.mkdir(parents=True, exist_ok=True)
     out = save_dir / f"{metric}.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
@@ -273,22 +275,30 @@ def plot_metric(
 @click.option(
     "--dataset", "-d",
     multiple=True,
-    help="Filter by dataset(s). Repeatable: --dataset tusimple culane",
+    callback=_split_values,
+    help="Filter by dataset(s).  Accepts space- or comma-separated values.\n"
+         "e.g. --dataset tusimple culane  OR  --dataset tusimple,culane",
 )
 @click.option(
     "--model", "-m",
     multiple=True,
-    help="Filter by model(s). Repeatable: --model lanenet2 ufld",
+    callback=_split_values,
+    help="Filter by model(s).  Accepts space- or comma-separated values.\n"
+         "e.g. --model lanenet2 ufld  OR  --model lanenet2,ufld",
 )
 @click.option(
     "--condition", "-c",
     multiple=True,
-    help="Filter by condition(s). Repeatable: --condition normal motion_blur",
+    callback=_split_values,
+    help="Filter by condition(s).  Accepts space- or comma-separated values.\n"
+         "e.g. --condition normal motion_blur  OR  --condition normal,motion_blur",
 )
 @click.option(
     "--metric",
     multiple=True,
-    help="Metrics to compare. Repeatable: --metric f1 accuracy (default: all)",
+    callback=_split_values,
+    help="Metrics to compare.  Accepts space- or comma-separated values.\n"
+         "e.g. --metric f1 accuracy  OR  --metric f1,accuracy  (default: all)",
 )
 @click.option(
     "--plot",
@@ -327,41 +337,34 @@ def compare(
     progress_data = load_progress(progress)
 
     metrics = list(metric) if metric else ALL_METRICS
-    runs = collect_runs(progress_data, dataset, model, condition)
+    runs    = collect_runs(progress_data, dataset, model, condition)
 
     if not runs:
         click.echo("No evaluated runs match the given filters.")
         return
 
-    # Print terminal table
     print_table(runs, metrics)
 
-    # Save table to file if requested
     if save:
         save_table(runs, metrics, save)
 
-    # Determine group/split axes for plots
-    unique_models = list(dict.fromkeys(r["model"] for r in runs))
+    unique_models     = list(dict.fromkeys(r["model"]     for r in runs))
     unique_conditions = list(dict.fromkeys(r["condition"] for r in runs))
 
     if len(unique_models) == 1:
-        # Fixed model → x = conditions, split = dataset (or just flat)
         group_by, split_by = "condition", "dataset"
     elif len(unique_conditions) == 1:
-        # Fixed condition → x = models, split = dataset
         group_by, split_by = "model", "dataset"
     else:
-        # Multiple models AND conditions → x = conditions, grouped bars = models
         group_by, split_by = "condition", "model"
 
     if plot:
-        # Organise by dataset / models / conditions being compared
-        unique_datasets = list(dict.fromkeys(r["dataset"] for r in runs))
-        scope_models = list(dict.fromkeys(r["model"] for r in runs))
+        unique_datasets  = list(dict.fromkeys(r["dataset"]   for r in runs))
+        scope_models     = list(dict.fromkeys(r["model"]     for r in runs))
         scope_conditions = list(dict.fromkeys(r["condition"] for r in runs))
 
-        dataset_part = unique_datasets[0] if len(unique_datasets) == 1 else "all_datasets"
-        model_part = scope_models[0] if len(scope_models) == 1 else "all_models"
+        dataset_part   = unique_datasets[0]  if len(unique_datasets)  == 1 else "all_datasets"
+        model_part     = scope_models[0]     if len(scope_models)     == 1 else "all_models"
         condition_part = scope_conditions[0] if len(scope_conditions) == 1 else "all_conditions"
 
         save_dir = plot / dataset_part / model_part / condition_part
