@@ -1,164 +1,132 @@
-import pytz, os, json, re
+import json
+from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Optional
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
 
 from microlane.schemas.prediction import Prediction
+from microlane.schemas.sample import Sample
 
 
-COLORS = ['#FFD700', '#00E5FF', '#FF4081', '#69FF47', '#FF6D00', '#E040FB']
 
-class ExperimentEvaluate:
+class _NumpyEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, np.ndarray):
+            return o.tolist()
+        if isinstance(o, np.integer):
+            return int(o)
+        if isinstance(o, np.floating):
+            return float(o)
+        return super().default(o)
 
-    def __init__(self, experiment_name, output_dir: str, save: bool = True) -> None:
-        self.experiment_name = experiment_name
-        self.file_name = "prediction.json"
-        self.folder_dir = output_dir + "/" + self.generate_folder_name()
-        self.inference_dir = self.folder_dir + "/inference"
-        self.save = save
 
-    def store_prediction(self, prediction: Prediction) -> None:
+_PRED_COLOURS = ["#00FF7F", "#00CFFF", "#FFD700", "#FF69B4", "#FF8C00", "#BF5FFF"]
+_GT_COLOURS   = ["#006400", "#005F8A", "#8B6914", "#8B0040", "#8B4500", "#5A0080"]
 
-        os.makedirs(self.folder_dir, exist_ok=True)
 
-        end_file_path = self.folder_dir + "/" + self.file_name
+@dataclass
+class Experiment:
 
-        output_entry = {
-            "lanes": prediction.lanes.tolist(),
-            "h_samples": prediction.h_samples.tolist(),
-            "raw_files": [s.image_path for s in prediction.samples],
-            "run_time": prediction.run_time,
+    base_dir: Path
+    folder: Path = field(init=False)
+    prediction_path: Optional[Path] = field(init=False, default=None)
+    
+
+    def __post_init__(self):
+
+        self.base_dir = Path(self.base_dir)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.folder = self.base_dir / f"experiment_{timestamp}"
+        self.folder.mkdir(parents=True, exist_ok=True)
+        self.visualization_count = 0
+
+
+    def store_prediction(self, prediction: Prediction) -> Path:
+
+        payload = {
+            "run_time":  prediction.run_time,
+            "lanes":     prediction.lanes,
+            "h_samples": prediction.h_samples,
+            "samples": [
+                {
+                    "image_path":  s.image_path,
+                    "lanes":       s.lanes,
+                    "h_samples":   s.h_samples,
+                    "dataset":     s.dataset,
+                    "blur":        s.blur,
+                    "lighting":    s.lighting,
+                    "rotation":    s.rotation,
+                    "zoom":        s.zoom,
+                    "motion_blur": s.motion_blur,
+                }
+                for s in prediction.samples
+            ],
         }
 
-        if os.path.exists(end_file_path):
-            with open(end_file_path, "r") as f:
-                data = json.load(f)
-            if not isinstance(data, list):
-                data = [data]
-        else:
-            data = []
+        self.prediction_path = self.folder / "prediction.json"
 
-        data.append(output_entry)
+        with self.prediction_path.open("w", encoding="utf-8") as f:
+            json.dump(payload, f, cls=_NumpyEncoder, indent=2)
 
-        with open(end_file_path, "w") as f:
-            json.dump(data, f, indent=2)
+        return self.prediction_path.resolve()
+    
+    def visualize_prediction(self, prediction: Prediction, show: bool = False) -> None:
 
-    def visualize_prediction(
-        self,
-        prediction: Prediction,
-        sample_index: int = 0,
-        show: bool = False,
-    ) -> str:
-        
-        sample = prediction.samples[sample_index]
+        sample: Sample = prediction.samples[-1]
 
-        if self.save:
-            os.makedirs(self.inference_dir, exist_ok=True)
+        h_pred = np.asarray(prediction.h_samples)
+        h_gt   = np.asarray(sample.h_samples)
 
-        pattern = re.compile(r"visualization_(\d+)\.png")
-
-        existing = [
-            f for f in os.listdir(self.inference_dir)
-            if f.startswith("visualization_") and f.endswith(".png")
-        ]
-
-        indices = [
-            int(match.group(1))
-            for f in existing
-            if (match := pattern.search(f)) is not None
-        ]
-
-        viz_index = max(indices, default=-1) + 1
-
-        save_path = os.path.join(
-            self.inference_dir,
-            f"visualization_{viz_index:04d}.png"
-        )
-
-        img = Image.open(sample.image_path)
-        img_arr = np.array(img)
-
-        modified_image = sample.image
-
-        fig, axes = plt.subplots(1, 3, figsize=(24, 6))
+        fig, axes = plt.subplots(1, 2, figsize=(16, 6))
         fig.suptitle(
-            f"Inference time: {prediction.run_time:.4f}s  |  "
-            f"File: {'/'.join(sample.image_path.split('/')[-3:])}",
-            fontsize=11,
-            color="gray",
+            f"dataset: {sample.dataset}  |  run_time: {prediction.run_time:.3f}s",
+            fontsize=12, fontweight="bold",
         )
 
-        axes[0].imshow(img_arr)
-        axes[0].set_title("Original", fontsize=12)
-        axes[0].axis("off")
+        panels = [
+            (axes[0], prediction.lanes, h_pred, _PRED_COLOURS, "Predicted lanes"),
+            (axes[1], sample.lanes,     h_gt,   _GT_COLOURS,   "Ground truth lanes"),
+        ]
 
-        axes[1].imshow(modified_image)
-        axes[1].set_title("Augmented", fontsize=12)
-        axes[1].axis("off")
+        h, w = sample.image.shape[:2]
 
-        axes[2].imshow(modified_image)
-        axes[2].set_title("Predictions", fontsize=12)
-        axes[2].axis("off")
+        for ax, lanes_arr, h_samples, colours, title in panels:
 
-        h, w = modified_image.shape[:2]
-        axes[2].set_xlim(0, w)
-        axes[2].set_ylim(h, 0)
+            ax.imshow(sample.image, origin="upper")
+            ax.set_title(title, fontsize=11)
+            ax.axis("off")
+            ax.set_xlim(0, w)
+            ax.set_ylim(h, 0)
 
-        legend_patches = []
+            legend_handles = []
 
-        for li, lane in enumerate(prediction.lanes):
-            color = COLORS[li % len(COLORS)]
-            xs, ys = [], []
+            for lane_idx, lane_xs in enumerate(np.asarray(lanes_arr)):
 
-            for x, y in zip(lane, prediction.h_samples):
-                if x == -2:
-                    if xs:
-                        axes[2].plot(xs, ys, color=color, linewidth=2)
-                        xs, ys = [], []
-                elif 0 <= x < w and 0 <= y < h:
-                    xs.append(x)
-                    ys.append(y)
+                colour  = colours[lane_idx % len(colours)]
+                lane_xs = np.asarray(lane_xs)
+                valid   = lane_xs != -2
+                xs, ys  = lane_xs[valid], h_samples[valid]
 
-            if xs:
-                axes[2].plot(xs, ys, color=color, linewidth=2)
+                if xs.size == 0:
+                    continue
 
-            valid = [
-                (x, y)
-                for x, y in zip(lane, prediction.h_samples)
-                if x != -2
-            ]
-            if valid:
-                vx, vy = zip(*valid)
-                axes[2].scatter(vx, vy, color=color, s=10, zorder=5)
+                ax.scatter(xs, ys, s=6, color=colour, linewidths=0)
+                ax.plot(xs, ys, color=colour, linewidth=1.5, alpha=0.7)
+                legend_handles.append(mpatches.Patch(color=colour, label=f"Lane {lane_idx + 1}"))
 
-            legend_patches.append(mpatches.Patch(color=color, label=f"Lane {li + 1}"))
-
-        axes[2].legend(
-            handles=legend_patches,
-            loc="upper left",
-            fontsize=9,
-            framealpha=0.6,
-            facecolor="black",
-            labelcolor="white",
-        )
+            if legend_handles:
+                ax.legend(handles=legend_handles, loc="upper right", fontsize=8, framealpha=0.6)
 
         plt.tight_layout()
-
-        if self.save:
-            fig.savefig(save_path, dpi=150, bbox_inches="tight")
+        out_path = self.folder / "inference" / f"visualization_{self.visualization_count:04d}.png"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        self.visualization_count += 1
 
         if show:
             plt.show()
-
-        plt.close(fig)
-        return save_path
-
-    def generate_folder_name(self) -> str:
-        experiment_name = self.experiment_name.lower().replace(" ", "_")
-        timezone = pytz.timezone("Asia/Kathmandu")
-        now = datetime.now(timezone)
-        timestamp = now.strftime("%Y_%m_%d__%H_%M_%S")
-        return f"{timestamp}_{experiment_name}"

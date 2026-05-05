@@ -1,21 +1,30 @@
-from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import JSONResponse
+import traceback
+import logging
+
+from fastapi import APIRouter, HTTPException, Request  # pyright: ignore[reportMissingImports]
+from fastapi.responses import JSONResponse  # pyright: ignore[reportMissingImports]
 
 from schemas.requests import InferRequest
-from helpers.server_utils import prediction_to_dict, sample_request_to_dict
+from helpers.request_conversion import sample_request_to_sample, prediction_to_response
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 @router.post("/infer")
 def infer(request: InferRequest, app_request: Request):
     try:
-        sample = request.sample.to_sample()
-        
+        sample = sample_request_to_sample(request.sample)
+
         prediction = app_request.app.state.model.infer(sample)
-        
-        response = prediction_to_dict(prediction)
-        
+
+        response = prediction_to_response(prediction)
+
+        logger.info("Inference complete, returning response")
         return JSONResponse(content=response)
-    
+
     except Exception as exc:
+        logger.error("Inference failed: %s", exc)
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(exc))

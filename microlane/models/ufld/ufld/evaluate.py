@@ -2,7 +2,7 @@ import numpy as np
 from typing import List
 
 from schemas.api_schemas import Sample
-from schemas.api_schemas import ModelPrediction
+from schemas.api_schemas import Prediction
 
 from helpers.preprocessing import PreProcessor
 from engine import UFLDEngine
@@ -21,7 +21,7 @@ class UFLD():
         self._img_h = 720  if dataset.lower() == "tusimple" else 590
 
     
-    def infer(self, picture: Sample ) -> ModelPrediction:
+    def infer(self, picture: Sample ) -> Prediction:
         
         processed_image = self.preprocessor.process(picture)
         
@@ -35,10 +35,11 @@ class UFLD():
 
         lanes = self._grid_to_lanes(out_j, picture.h_samples)
 
-        return ModelPrediction(
-            sample=picture,
-            lanes=lanes,
-            run_time=t_cost,
+        return Prediction(
+            samples=[picture],
+            lanes=np.array(lanes),
+            h_samples=np.array(picture.h_samples),
+            run_time=float(t_cost)
         )
     
     

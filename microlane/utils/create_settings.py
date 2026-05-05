@@ -8,7 +8,6 @@ def create_settings(
     model: str,
     dataset: str,
     augmentation_type: str,
-    augmentation_settings: dict,
     output_path: str,
     experiment_name: str
 ) -> dict:
@@ -24,7 +23,6 @@ def create_settings(
         "dataset": dataset,
         "augmentation": {
             "type": augmentation_type,
-            "settings": augmentation_settings,
         },
     }
 

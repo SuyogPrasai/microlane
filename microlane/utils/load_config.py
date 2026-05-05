@@ -22,6 +22,14 @@ def _from_dict(cls, data: dict) -> Config:
         if hasattr(ftype, '__dataclass_fields__') and isinstance(value, dict):
             kwargs[f.name] = _from_dict(ftype, value)
 
+        # dict[str, DataClass]  e.g. presets: dict[str, AugmentationPreset]
+        elif origin is dict and isinstance(value, dict):
+            _, val_type = get_args(ftype)
+            if hasattr(val_type, '__dataclass_fields__'):
+                kwargs[f.name] = {k: _from_dict(val_type, v) for k, v in value.items()}
+            else:
+                kwargs[f.name] = value
+        
         # tuple[float, float]  e.g. augmentation ranges
         elif origin is tuple and isinstance(value, list):
             kwargs[f.name] = tuple(value)

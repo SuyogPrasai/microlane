@@ -12,7 +12,7 @@ data:
     tusimple:
       name: tusimple
       path: /home/suyog/assets/datasets/TuSimple/TUSimple
-      annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_path_normalised.json
+      annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_new.json
       enabled: True
     
     custom_dataset:
@@ -39,7 +39,7 @@ data:
         motion_blur: 0.0
         shake: false
 
-      lighting-d:
+      lighting_d:
         blur: 0.0
         rotation: 0.0
         zoom: 1.0
@@ -47,7 +47,7 @@ data:
         motion_blur: 0.0
         shake: false
 
-      lighting-b:
+      lighting_b:
         blur: 0.0
         rotation: 0.0
         zoom: 1.0
@@ -55,7 +55,7 @@ data:
         motion_blur: 0.0
         shake: false
 
-      motion-blur:
+      motion_blur:
         blur: 0.0
         rotation: 0.0
         zoom: 1.0
@@ -63,7 +63,7 @@ data:
         motion_blur: 1.0
         shake: false
 
-      camera-shake:
+      camera_shake:
         blur: 0.0
         rotation: 0.0
         zoom: 1.0
@@ -74,14 +74,14 @@ data:
 models:
   lanenet:
     name: lanenet
-    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/lanenet/lanenet"
+    container_folder: "/home/suyog/desktop/projects/microlane/microlane/models/lanenet/lanenet"
     image_name: "lanenet_image:latest"
     port: 8001
     enabled: True
 
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
-    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/ufld/ufld"
+    container_folder: "/home/suyog/desktop/projects/microlane/microlane/models/ufld/ufld"
     image_name: "ufld_image:latest"
     port: 8002
     enabled: True
@@ -90,6 +90,6 @@ results:
   
 experiment:
   experiment_directory: "/home/suyog/desktop/projects/microlane/results/EXPERIMENT"
-  testing_drectory: "/home/suyog/desktop/projects/microlane/results/testing"
+  testing_directory: "/home/suyog/desktop/projects/microlane/results/testing"
   sample_length: 500
   inference_image_sampling_number: 10

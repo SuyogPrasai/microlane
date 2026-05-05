@@ -33,11 +33,15 @@ class AugmentationPreset:
     motion_blur: float
     shake: bool
 
+    def __getitem__(self, key: str) -> float | bool:
+        return getattr(self, key)
+
 @dataclass
 class AugmentationConfig:
     ranges: AugmentationRangesConfig
     presets: dict[str, AugmentationPreset] = field(default_factory=dict)
-
+    
+ 
 @dataclass
 class DataConfig:
     datasets: DatasetsConfig

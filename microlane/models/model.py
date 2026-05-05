@@ -1,3 +1,6 @@
+import time
+import requests as req 
+
 from microlane.utils.load_config import load_config
 from microlane.utils.container import ContainerManager
 from microlane.schemas.config import ModelConfig
@@ -52,7 +55,7 @@ class Model:
             try:
                 container = self.container_manager.start_container(
                     image_name=model.image_name,
-                    port=self.config.pipeline.default_port
+                    port=model.port
                 )
                 if container.id is None:
                     raise RuntimeError("Container started but no ID was returned.")
@@ -69,7 +72,7 @@ class Model:
                 )
                 container = self.container_manager.start_container(
                     image_name=model.image_name,
-                    port=self.config.pipeline.default_port
+                    port=model.port
                 )
                 if container.id is None:
                     raise RuntimeError("Container started but no ID was returned.")
@@ -80,6 +83,39 @@ class Model:
     def initialize_model(self, model: ModelConfig) -> str:
         try:
             container_id = self._initialize_container(model)
+            
+            self.wait_for_ready(
+                model.port
+            )
+            
             return container_id
         except Exception as e:
             raise RuntimeError(f"Failed to initialize model: {e}")
+    
+    
+    def wait_for_ready(self, port, timeout: int = 30, interval: float = 0.5):
+
+        url = f"http://localhost:{port}/health"
+
+        deadline = time.time() + timeout
+
+        print(f"Waiting for container to be ready on port {port}...")
+
+        while time.time() < deadline:
+
+            try:
+                r = req.get(url, timeout=1)
+
+                if r.status_code == 200:
+
+                    print("Container is ready.")
+                    
+                    return
+
+            except req.exceptions.ConnectionError:
+
+                pass
+
+            time.sleep(interval)
+
+        raise TimeoutError(f"Container on port {port} not ready after {timeout}s")        

@@ -20,7 +20,7 @@ class UFLD(Model):
         
         super().__init__()
         
-        self.model_config = self.config.models.lanenet
+        self.model_config = self.config.models.ultra_fast_lane_detection
         
         print(self.config)
         

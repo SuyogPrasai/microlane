@@ -13,15 +13,13 @@ class LaneNet(Model):
         super().__init__()
         
         self.model_config = self.config.models.lanenet
-        
-        print(self.config)
-        
+                
         self.container_id = self.initialize_model(self.model_config)
     
     def predict(self, sample: Sample) -> Prediction:
         
         url = f'http://localhost:{self.model_config.port}/infer'
-        
+                
         payload = sample_to_payload(sample)
         
         response = requests.post(url, json={"sample": payload})

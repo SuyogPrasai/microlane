@@ -25,6 +25,7 @@ class PreProcessor:
             image=resized,
             lanes=np.array(sample.lanes),
             h_samples=np.array(sample.h_samples),
+            dataset=sample.dataset,
             lighting=sample.lighting,
             blur=sample.blur,
             zoom=sample.zoom,

@@ -4,7 +4,9 @@ from docker.models.images import Image
 
 from pathlib import Path
 from typing import List, Tuple
+from microlane.utils.load_config import load_config
 
+config = load_config()
 
 class ContainerManager:
 
@@ -16,7 +18,7 @@ class ContainerManager:
         container = self.client.containers.run(
             image_name,
             detach=True,
-            ports={f"{port}/tcp": port},
+            ports={f"{config.pipeline.default_port}/tcp": port},
         )
         return container
 
@@ -32,13 +34,23 @@ class ContainerManager:
 
     def build_image(self, dockerfile_path: Path, image_name: str):
         """Build a Docker image from a Dockerfile."""
-        image, logs = self.client.images.build(
+        all_logs = []
+        for log in self.client.api.build(
             path=str(dockerfile_path.parent),
             dockerfile=str(dockerfile_path.name),
             tag=image_name,
             rm=True,
-        )
-        return image, logs
+            decode=True
+        ):
+            all_logs.append(log)
+            if "stream" in log:
+                print(log["stream"], end="", flush=True)
+            elif "error" in log:
+                print(log["error"], flush=True)
+                raise Exception(log["error"])
+
+        image = self.client.images.get(image_name)
+        return image, all_logs
 
     def active_images(self) -> List[Image]:
         """Return a list of all locally available images."""
