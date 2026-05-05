@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from microlane.schema.sample import Sample
+from schema.sample import Sample
 
 
 class Augmentor():

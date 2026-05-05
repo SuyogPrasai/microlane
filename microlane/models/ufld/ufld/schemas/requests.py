@@ -4,18 +4,6 @@ from pydantic import BaseModel, validator
 from schemas.api_schemas import Sample # type: ignore
 
 
-class LaneLineRequest(BaseModel):
-    x_coordinates: List[float]
-    y_coordinates: List[float]
-
-    @validator("y_coordinates")
-    def x_and_y_length_match(cls, value, values):
-        x_coordinates = values.get("x_coordinates")
-        if x_coordinates is not None and len(value) != len(x_coordinates):
-            raise ValueError("x_coordinates and y_coordinates must have the same length")
-        return value
-
-
 class SampleRequest(BaseModel):
     image_path: str
     image: List

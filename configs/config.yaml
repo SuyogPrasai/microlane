@@ -1,45 +1,96 @@
-# Configuration file for the project
-# Contains the global settings for the pipeline
-# This contains the settings for how the experiment will be setup
+# Global settings for the whole pipeline
+# This needs to seen through for one time, and then directly use the pipeline
 
 pipeline:
   name: "Microlane"
   version: "1.0.0"
   description: "Evaluating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars"
+  default_port: 8000
 
 data:
   datasets:
     tusimple:
-      path: /home/suyog/assets/datasets/TuSimple/TUSimple/
+      name: tusimple
+      path: /home/suyog/assets/datasets/TuSimple/TUSimple
       annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_path_normalised.json
+      enabled: True
     
-    raw:
-      path: /home/suyog/desktop/projects/microlane/results/13-minute-sampling/
+    custom_dataset:
+      name: custom_dataset
+      path: /home/suyog/desktop/projects/microlane/results/13-minute-sampling
       annotation_file: /home/suyog/desktop/projects/microlane/results/13-minute-sampling/annotations.json
-  
+      enabled: True
+
   augmentation:
-    motion_blur: [0.0, 0.1]
-    lighting: [-1.0, 1.0]
-    blur: [0.0, 1.0]
-    zoom: [1.0, 3]
-    rotation: [0.0, 360.0]
   
+    ranges:
+      motion_blur_range: [0.0, 0.1]
+      lighting_range: [-1.0, 1.0]
+      blur_range: [0.0, 1.0]
+      zoom_range: [1.0, 3]
+      rotation_range: [0.0, 360.0]
+
+    presets:
+      normal:
+        blur: 0.0
+        rotation: 0.0
+        zoom: 1.0
+        lighting: 0.0
+        motion_blur: 0.0
+        shake: false
+
+      lighting-d:
+        blur: 0.0
+        rotation: 0.0
+        zoom: 1.0
+        lighting: -0.4
+        motion_blur: 0.0
+        shake: false
+
+      lighting-b:
+        blur: 0.0
+        rotation: 0.0
+        zoom: 1.0
+        lighting: 0.4
+        motion_blur: 0.0
+        shake: false
+
+      motion-blur:
+        blur: 0.0
+        rotation: 0.0
+        zoom: 1.0
+        lighting: 0.0
+        motion_blur: 1.0
+        shake: false
+
+      camera-shake:
+        blur: 0.0
+        rotation: 0.0
+        zoom: 1.0
+        lighting: 0.0
+        motion_blur: 0.0
+        shake: true
+
 models:
-  lanenet2:
-    name: lanenet2
-    container_folder: "/home/suyog/desktop/projects/microlane/microlane/microlane/models/lanenet2/lanenet2"
-    image_name: "lanenet2_image:latest"
+  lanenet:
+    name: lanenet
+    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/lanenet/lanenet"
+    image_name: "lanenet_image:latest"
+    port: 8001
+    enabled: True
 
   ultra_fast_lane_detection:
     name: ultra_fast_lane_detection
-    container_folder: "/home/suyog/desktop/projects/microlane/microlane/microlane/models/ufld/ufld"
+    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/ufld/ufld"
     image_name: "ufld_image:latest"
+    port: 8002
+    enabled: True
+
+results:
   
-evaluation:
-  metrics:
-    - accuracy
-    - f1_score
-    - fps
-    - precision
-    - recall
-  tusimple_metric: true
+
+experiment:
+  experiment_directory: "/home/suyog/desktop/projects/microlane/results/EXPERIMENT"
+  testing_drectory: "/home/suyog/desktop/projects/microlane/results/testing"
+  sample_length: 500
+  inference_image_sampling_number: 10

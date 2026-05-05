@@ -5,7 +5,7 @@ Code which helps us work with the Raw Dataset with only the Raw Image
 
 import os, json
 from typing import Tuple, List
-from microlane.schema.sample import Sample
+from schema.sample import Sample
 import numpy as np
 from pathlib import Path
 import cv2
