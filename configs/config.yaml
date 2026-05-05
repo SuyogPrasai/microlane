@@ -17,8 +17,8 @@ data:
     
     custom_dataset:
       name: custom_dataset
-      path: /home/suyog/desktop/projects/microlane/results/13-minute-sampling
-      annotation_file: /home/suyog/desktop/projects/microlane/results/13-minute-sampling/annotations.json
+      path: /home/suyog/desktop/projects/microlane/results/custom_dataset
+      annotation_file: /home/suyog/desktop/projects/microlane/results/custom_dataset/annotations.xml
       enabled: True
 
   augmentation:
@@ -88,7 +88,6 @@ models:
 
 results:
   
-
 experiment:
   experiment_directory: "/home/suyog/desktop/projects/microlane/results/EXPERIMENT"
   testing_drectory: "/home/suyog/desktop/projects/microlane/results/testing"

@@ -1,11 +1,11 @@
-import numpy as np
-import tensorflow as tf
-from typing import Tuple
+import numpy as np  # pyright: ignore[reportMissingImports]
+import tensorflow as tf  # pyright: ignore[reportMissingModuleSource, reportMissingImports]
+from typing import Tuple  # pyright: ignore[reportMissingImports]
 
-from lanenet_model import lanenet # type: ignore
-from local_utils.config_utils import parse_config_utils # type: ignore
-from local_utils.log_util import init_logger # type: ignore
-import time
+from lanenet_model import lanenet # pyright: ignore[reportMissingImports]
+from local_utils.config_utils import parse_config_utils # pyright: ignore[reportMissingImports]
+from local_utils.log_util import init_logger # pyright: ignore[reportMissingImports]
+import time# pyright: ignore[reportMissingImports]
 
 class LaneNet2Engine():
     

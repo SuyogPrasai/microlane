@@ -1,37 +1,35 @@
 
 from microlane.datasets.tusimple import TuSimple
-from microlane.datasets.raw import Raw
-from microlane.models.lanenet2.model import LaneNet2
-from microlane.models.ufld.model import UFLD
+from microlane.datasets.custom_dataset import CustomDataset
 
-def load_dataset(dataset: str, config: dict, sample_number: int):
+from microlane.models.lanenet.model import LaneNet
+from microlane.models.ufld.model import UFLD
+from microlane.utils.load_config import load_config
+
+config = load_config()
+
+def load_dataset(dataset: str, sample_number: int):
     if dataset == "tusimple":
         ds = TuSimple(
-            annotation_file_path=config['data']['datasets']['tusimple']['annotation_file'],
-            folder_path=config['data']['datasets']['tusimple']['path']
+            folder_path=config.data.datasets.tusimple.path,
+            annotation_file_path=config.data.datasets.tusimple.annotation_file
         )
-    elif dataset == "raw":
-        ds = Raw(
-            folder_path=config['data']['datasets']['raw']['path'],
-            annotation=True,
-            annotation_file_path=config['data']['datasets']['raw']['annotation_file']
+    elif dataset == "custom_dataset":
+        ds = CustomDataset(
+            folder_path=config.data.datasets.custom_dataset.path,
+            annotation_file_path=config.data.datasets.custom_dataset.annotation_file
         )
     else:
-        raise ValueError(f"Unknown dataset '{dataset}'. Choose from: tusimple, raw")
+        raise ValueError(f"Unknown dataset '{dataset}'. Choose from: tusimple, custom_dataset")
 
     return ds.load(number=sample_number)
 
 
-def load_model(model: str, config: dict):
+def load_model(model: str):
     if model == "lanenet":
-        return LaneNet2(
-            container_folder=config['models']['lanenet2']['container_folder'],
-            image_name=config['models']['lanenet2']['image_name']
-        )
+        return LaneNet()
+    
     elif model == "ufld":
-        return UFLD(
-            container_folder=config['models']['ultra_fast_lane_detection']['container_folder'],
-            image_name=config['models']['ultra_fast_lane_detection']['image_name']
-        )
+        return UFLD()
     else:
         raise ValueError(f"Unknown model '{model}'. Choose from: lanenet, ufld")

@@ -1,67 +1,100 @@
-"""
-Code which helps us work with the TuSimple Dataset localted at data/TuSimple
-"""
-
-import os, json
-from typing import Tuple, List
-from microlane.schema.sample import Sample
-import numpy as np
 from pathlib import Path
-import cv2
+from typing import List
+import cv2, json
+import numpy as np
 
-# This is a common dataset example that can be implemented for all types, right now i have only done for TUsimple
-# Buyt it may be more appropriate to create a Dataset Class and extend it for TuSimple, and add more properties accordingly
+from microlane.schemas.sample import Sample
 
-class TuSimple():    
-    """
-    Class structuring for the tusimple datset
-
-    """
+class TuSimple():
     
     def __init__(
-        self, 
-        annotation_file_path: str,
-        folder_path: str
+        self,
+        folder_path: Path,
+        annotation_file_path: Path
         ) -> None:
         
-        self.annotation_file_path = annotation_file_path
         self.folder_path = folder_path
+        self.annotation_file_path = annotation_file_path
         
-        if(Path(self.annotation_file_path).exists() is False):
-            raise FileNotFoundError("The annotation file path provided does not exist")
+        # Add checks and verifications
+        
+        if self.annotation_file_path.exists() is False:
+            raise FileNotFoundError(f"Annotation file not found at {self.annotation_file_path}")
+        
+        if self.folder_path.exists() is False:
+            raise FileNotFoundError(f"Folder path not found at {self.folder_path}")
+    
+        if self.folder_path.is_dir() is False:
+            raise NotADirectoryError(f"Provided folder path is not a directory: {self.folder_path}")
+        
+        if self.annotation_file_path.is_file() is False:
+            raise ValueError(f"Provided annotation path is not a file: {self.annotation_file_path}")
+        
+        if self.annotation_file_path.suffix.lower() != '.json':
+            raise ValueError(f"Annotation file must be a JSON file: {self.annotation_file_path}")
         
     
-    def load(self, number=300) -> List[Sample]:
-        samples = []
-
-        with open(self.annotation_file_path, "r") as f:
+    def load(self, number: int = 500) -> List[Sample]:
+        
+        samples: List[Sample] = []
+        
+        with open(self.annotation_file_path, 'r') as f:
+            
             for i, line in enumerate(f):
                 if i >= number:
                     break
-
-                line = line.strip()
-                if not line:
+                
+                data = json.loads(line)
+                
+                image_path = self.folder_path / data['raw_file']
+                
+                if not image_path.exists():    
+                    print(f"Warning: Image file not found at [{image_path}], skipping sample.")
                     continue
-
-                data: dict = json.loads(line)
-
-                sample = Sample(
-                    image_path=data["raw_file"],
-                    lanes=data["lanes"],
-                    h_samples=data["h_samples"],
-                    image=None,
+                
+                image = cv2.imread(str(image_path))
+                
+                if image is None:
+                    print(f"Warning: Failed to load image at [{image_path}], skipping sample.")
+                    continue
+                
+                samples.append(
+                    Sample(
+                        image_path=str(image_path),
+                        image=cv2.cvtColor(image, cv2.COLOR_BGR2RGB),
+                        lanes=np.array(data['lanes']),
+                        h_samples=np.array(data['h_samples']),
+                        dataset="TuSimple"
+                    )
                 )
-
-                samples.append(sample)
-
         return samples
     
-    def load_image(self, sample: Sample) -> Sample:
-        image = cv2.imread(sample.image_path)
-        if image is None:
-            raise FileNotFoundError(f"Could not read image at '{sample.image_path}'")
-        sample.image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        return sample
-    
-    def load_images(self, samples: List[Sample]) -> List[Sample]:
-        return [self.load_image(sample) for sample in samples]
+    def sample(self, raw_file: Path) -> Sample:
+        
+        with open(self.annotation_file_path, 'r') as f:
+            for line in f:
+                data = json.loads(line)
+                
+                image_path = self.folder_path / data['raw_file']
+                
+                if image_path != raw_file:
+                    continue
+                
+                if not image_path.exists():
+                    raise FileNotFoundError(f"Image file not found at [{image_path}]")
+                
+                image = cv2.imread(str(image_path))
+                
+                if image is None:
+                    raise ValueError(f"Failed to load image at [{image_path}]")
+                
+                return Sample(
+                    image_path=str(image_path),
+                    image=cv2.cvtColor(image, cv2.COLOR_BGR2RGB),
+                    lanes=np.array(data['lanes']),
+                    h_samples=np.array(data['h_samples']),
+                    dataset="TuSimple"
+                )
+        
+        raise RuntimeError(f"Sample with raw_file '{raw_file}' not found in annotation file")
+        

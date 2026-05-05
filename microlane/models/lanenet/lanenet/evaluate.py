@@ -1,21 +1,19 @@
-import tensorflow as tf
-import numpy as np
-from typing import Tuple, List
-import yaml, time
+import tensorflow as tf  # pyright: ignore[reportMissingModuleSource, reportMissingImports]
+import numpy as np  # pyright: ignore[reportMissingImports]
+from typing import Tuple, List  # pyright: ignore[reportMissingImports]
 
+from schemas.api_schemas import Sample  # pyright: ignore[reportMissingImports]
+from schemas.api_schemas import Prediction  # pyright: ignore[reportMissingImports]
 
-from schemas.api_schemas import Sample
-from schemas.api_schemas import ModelPrediction
-
-from helpers.preprocessing import PreProcessor
-from engine import LaneNet2Engine
+from helpers.preprocessing import PreProcessor # pyright: ignore[reportMissingImports]
+from engine import LaneNet2Engine  # pyright: ignore[reportMissingImports]
 
 from lanenet_model import lanenet_postprocess # type: ignore
 from local_utils.config_utils import parse_config_utils # type: ignore
 
 CFG = parse_config_utils.lanenet_cfg
 
-class LaneNet2():
+class LaneNet():
     
     def __init__(
         self,
@@ -29,7 +27,7 @@ class LaneNet2():
         self._engine = LaneNet2Engine(weights_path)
 
     
-    def infer(self, picture: Sample) -> ModelPrediction:
+    def infer(self, picture: Sample) -> Prediction:
         
         # I probably dont need the postprocessing step here since I am creating a unified preprocessing pipeline
                 
@@ -59,7 +57,7 @@ class LaneNet2():
             
         )
         
-                # mask_image = postprocess_result['mask_image']
+        # mask_image = postprocess_result['mask_image']
 
         fit_params = postprocess_result['fit_params']
 
@@ -111,18 +109,12 @@ class LaneNet2():
 
                 lanes.append(lane_xs)
                 
-        return ModelPrediction(
-            sample=picture,
-            lanes=lanes,
-            run_time=t_cost
+        return Prediction(
+            samples=[picture],
+            lanes=np.array(lanes),
+            h_samples=np.array(h_samples),
+            run_time=float(t_cost)
         )
-    
-    def batch_infer(self, batch: List[Sample]) -> List[ModelPrediction]:
-        """
-        Prediction for a list of inputs
-        
-        """
-        return [self.infer(item) for item in batch]
     
     def close(self):
         self._engine.close()

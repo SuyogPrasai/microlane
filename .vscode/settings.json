@@ -13,6 +13,8 @@
         ".vscode": true,
         ".vscode/**": true,
         ".pytest_cache": true,
-        ".pytest_cache/**": true
+        ".pytest_cache/**": true,
+        "github": true,
+        "github/**": true
     }
 }

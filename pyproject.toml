@@ -1,47 +1,30 @@
 [project]
 name = "microlane"
-version = "0.1.0"
+version = "1.0.0"
 description = "Evaluating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars"
 authors = [
     {name = "suyog prasai",email = "suyog224356@gmail.com"}
 ]
 license = "MIT"
-readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "docker (>=7.1.0,<8.0.0)",
-    "pytz (>=2026.1.post1,<2027.0)",
-    "pyyaml (>=6.0.3,<7.0.0)",
     "numpy (>=2.4.4,<3.0.0)",
-    "pillow (>=12.2.0,<13.0.0)",
-    "tqdm (>=4.67.3,<5.0.0)",
-    "matplotlib (>=3.10.9,<4.0.0)",
     "opencv-python (>=4.13.0.92,<5.0.0.0)",
+    "pyyaml (>=6.0.3,<7.0.0)",
     "click (>=8.3.3,<9.0.0)",
-    "rich (>=15.0.0,<16.0.0)",
-    "iprogress (>=0.4,<0.5)",
-    "ipywidgets (>=8.1.8,<9.0.0)",
-    "scikit-learn (>=1.8.0,<2.0.0)",
-    "ujson (>=5.12.0,<6.0.0)",
-    "tk (>=0.1.0,<0.2.0)",
-    "pandas (>=3.0.2,<4.0.0)",
-    "openpyxl (>=3.1.5,<4.0.0)"
+    "filetype (>=1.2.0,<2.0.0)"
 ]
 
-
-[tool.poetry]
-packages = [{include = "microlane", from = "microlane"},
-            {include = "scripts"}
-
-]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[dependency-groups]
-dev = [
-    "ipykernel (>=7.2.0,<8.0.0)"
+[tool.poetry]
+packages = [
+    { include = "microlane" },
+    { include = "scripts" }
 ]
 
 [tool.poetry.scripts]

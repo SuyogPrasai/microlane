@@ -6,31 +6,30 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from PIL import Image
 
-from microlane.schema.output import ModelPrediction
+from microlane.schemas.prediction import Prediction
 
 
 COLORS = ['#FFD700', '#00E5FF', '#FF4081', '#69FF47', '#FF6D00', '#E040FB']
 
-
 class ExperimentEvaluate:
 
-    def __init__(self, experiment_name, output_dir: str,  save: bool = True) -> None:
+    def __init__(self, experiment_name, output_dir: str, save: bool = True) -> None:
         self.experiment_name = experiment_name
         self.file_name = "prediction.json"
         self.folder_dir = output_dir + "/" + self.generate_folder_name()
         self.inference_dir = self.folder_dir + "/inference"
         self.save = save
 
-    def store_prediction(self, prediction: ModelPrediction) -> None:
+    def store_prediction(self, prediction: Prediction) -> None:
 
         os.makedirs(self.folder_dir, exist_ok=True)
 
         end_file_path = self.folder_dir + "/" + self.file_name
 
         output_entry = {
-            "lanes": prediction.lanes,
-            "h_samples": prediction.sample.h_samples,
-            "raw_file": prediction.sample.image_path,
+            "lanes": prediction.lanes.tolist(),
+            "h_samples": prediction.h_samples.tolist(),
+            "raw_files": [s.image_path for s in prediction.samples],
             "run_time": prediction.run_time,
         }
 
@@ -49,10 +48,13 @@ class ExperimentEvaluate:
 
     def visualize_prediction(
         self,
-        prediction: ModelPrediction,
+        prediction: Prediction,
+        sample_index: int = 0,
         show: bool = False,
     ) -> str:
         
+        sample = prediction.samples[sample_index]
+
         if self.save:
             os.makedirs(self.inference_dir, exist_ok=True)
 
@@ -76,15 +78,15 @@ class ExperimentEvaluate:
             f"visualization_{viz_index:04d}.png"
         )
 
-        img = Image.open(prediction.sample.image_path)
+        img = Image.open(sample.image_path)
         img_arr = np.array(img)
 
-        modified_image = prediction.sample.image
+        modified_image = sample.image
 
         fig, axes = plt.subplots(1, 3, figsize=(24, 6))
         fig.suptitle(
             f"Inference time: {prediction.run_time:.4f}s  |  "
-            f"File: {'/'.join(prediction.sample.image_path.split('/')[-3:])}",
+            f"File: {'/'.join(sample.image_path.split('/')[-3:])}",
             fontsize=11,
             color="gray",
         )
@@ -100,10 +102,10 @@ class ExperimentEvaluate:
         axes[2].imshow(modified_image)
         axes[2].set_title("Predictions", fontsize=12)
         axes[2].axis("off")
-        
-        h, w = np.array(modified_image).shape[:2] # pyright: ignore[reportOptionalMemberAccess]
+
+        h, w = modified_image.shape[:2]
         axes[2].set_xlim(0, w)
-        axes[2].set_ylim(h, 0)  # Note: inverted because image y-axis goes top-dow
+        axes[2].set_ylim(h, 0)
 
         legend_patches = []
 
@@ -111,23 +113,21 @@ class ExperimentEvaluate:
             color = COLORS[li % len(COLORS)]
             xs, ys = [], []
 
-            for x, y in zip(lane, prediction.sample.h_samples):
+            for x, y in zip(lane, prediction.h_samples):
                 if x == -2:
                     if xs:
-                        # Bug fix: lane lines belong on axes[2], not axes[1]
                         axes[2].plot(xs, ys, color=color, linewidth=2)
                         xs, ys = [], []
-                    elif 0 <= x < w and 0 <= y < h:  # only plot in-bounds points
-                        xs.append(x)
-                        ys.append(y)
+                elif 0 <= x < w and 0 <= y < h:
+                    xs.append(x)
+                    ys.append(y)
 
             if xs:
-                # Bug fix: flush the final segment to axes[2]
                 axes[2].plot(xs, ys, color=color, linewidth=2)
 
             valid = [
                 (x, y)
-                for x, y in zip(lane, prediction.sample.h_samples)
+                for x, y in zip(lane, prediction.h_samples)
                 if x != -2
             ]
             if valid:
@@ -146,7 +146,7 @@ class ExperimentEvaluate:
         )
 
         plt.tight_layout()
-        
+
         if self.save:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
 
@@ -155,7 +155,7 @@ class ExperimentEvaluate:
 
         plt.close(fig)
         return save_path
-    
+
     def generate_folder_name(self) -> str:
         experiment_name = self.experiment_name.lower().replace(" ", "_")
         timezone = pytz.timezone("Asia/Kathmandu")
