@@ -33,7 +33,7 @@ def parse_evaluation(evaluation_path: Path) -> dict:
             return {"ok": False, "error": f"expected list, got {type(data).__name__}"}
 
         count = len(data)
-        metrics = ["accuracy", "fp", "fn", "precision", "recall", "f1", "run_time"]
+        metrics = ["accuracy", "precision", "recall", "f1_score", "run_time"]
         summary: dict[str, float] = {}
         for metric in metrics:
             values = [s[metric] for s in data if metric in s]

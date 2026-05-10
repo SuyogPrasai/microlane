@@ -21,8 +21,11 @@ class Model:
     def stop(self, container_id) -> None:
         self.container_manager.stop_container(container_id=container_id)
         
-    def restart(self, container_id) -> None:
+    def restart(self, container_id, model: ModelConfig) -> None:
         self.container_manager.restart_container(container_id=container_id)
+        self.wait_for_ready(
+                model.port
+            )
     
     def _initialize_container(self, model: ModelConfig) -> str:
 

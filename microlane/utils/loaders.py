@@ -29,7 +29,7 @@ def load_model(model: str):
     if model == "lanenet":
         return LaneNet()
     
-    elif model == "ufld":
+    elif model == "ultra_fast_lane_detection":
         return UFLD()
     else:
         raise ValueError(f"Unknown model '{model}'. Choose from: lanenet, ufld")

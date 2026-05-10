@@ -1,44 +1,25 @@
 import click
 import json
 from pathlib import Path
-
+from typing import List
+from microlane.schemas.prediction import Evaluation
 from scripts.core.evaluate import evaluate_scenario
 from scripts.core.visualization import draw_evaluation_graphs
 from scripts.core.results import load_results
+from scripts.utils.evaluation_to_dic import evaluation_to_dict
 
 
 @click.command()
 @click.option(
-    "--progress",
-    "-p",
+    "--progress", "-p",
     required=True,
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
     help="Path to progress.json",
 )
-@click.option(
-    "--save",
-    "-s",
-    is_flag=True,
-    help="Save evaluation results to evaluation.json in each run directory",
-)
-@click.option(
-    "--graphs",
-    "-g",
-    is_flag=True,
-    help="Draw graphs for runs missing them, even if evaluation.json already exists",
-)
-@click.option(
-    "--graph-re",
-    "-gr",
-    is_flag=True,
-    help="Regenerate graphs for all runs, even if they already exist",
-)
-@click.option(
-    "--light-theme",
-    "-lt",
-    is_flag=True,
-    help="Generate graphs in light theme",
-)
+@click.option("--save", "-s", is_flag=True, help="Save evaluation results to evaluation.json in each run directory")
+@click.option("--graphs", "-g", is_flag=True, help="Draw graphs for runs missing them, even if evaluation.json already exists")
+@click.option("--graph-re", "-gr", is_flag=True, help="Regenerate graphs for all runs, even if they already exist")
+@click.option("--light-theme", "-lt", is_flag=True, help="Generate graphs in light theme")
 @click.pass_context
 def assess(
     ctx: click.Context,
@@ -60,8 +41,8 @@ def assess(
     with open(progress) as f:
         progress_data = json.load(f)
 
-    missing_eval: list[tuple[str, Path, str]] = []  # needs evaluation
-    missing_graphs: list[tuple[str, Path]] = []      # has evaluation, needs graphs
+    missing_eval: list[tuple[str, Path, str]] = []
+    missing_graphs: list[tuple[str, Path]] = []
 
     index = progress_data.get("index", {})
     for dataset, models in index.items():
@@ -95,14 +76,12 @@ def assess(
                 click.echo(f"  ✗ Dataset '{dataset}' not found in config, skipping.\n")
                 continue
 
-            annotation_path = Path(datasets_config[dataset]["annotation_file"])
-
             if not prediction_path.exists():
                 click.echo(f"  ✗ prediction.json not found at {prediction_path}, skipping.\n")
                 continue
 
             try:
-                results = evaluate_scenario(prediction_path, annotation_path)
+                results: List[Evaluation] = evaluate_scenario(prediction_path)
             except Exception as e:
                 click.echo(f"  ✗ evaluate_scenario failed: {e}\n")
                 continue
@@ -113,8 +92,15 @@ def assess(
 
             output_file = prediction_path.parent / "evaluation.json"
 
+            existing = []
+            if output_file.exists():
+                with open(output_file, "r") as f:
+                    existing = json.load(f)
+
+            existing.extend([evaluation_to_dict(r) for r in results])
+
             with open(output_file, "w") as f:
-                json.dump(results, f, indent=4)
+                json.dump(existing, f, indent=4)
 
             click.echo(f"  ✓ Saved → {output_file}")
 

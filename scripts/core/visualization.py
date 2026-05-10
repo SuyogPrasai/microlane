@@ -16,7 +16,7 @@ LIGHT_GRID  = '#dddddd'
 COLORS_DARK  = ['#00e5ff', '#ff4d6d', '#c8ff00', '#ff9f1c', '#b388ff', '#00ffa3', '#ff6b6b']
 COLORS_LIGHT = ['#0077cc', '#e63950', '#5a9e00', '#e07b00', '#7c4dcc', '#00a372', '#cc3333']
 
-METRIC_KEYS = ['accuracy', 'fp', 'fn', 'precision', 'recall', 'f1', 'run_time']
+METRIC_KEYS = ['accuracy', 'precision', 'recall', 'f1_score', 'run_time']
 
 
 # ── Data loading ───────────────────────────────────────────────────────────────
@@ -149,7 +149,7 @@ def _save_cumulative(metrics: dict, output_folder: Path, light_theme: bool = Fal
     samples = list(range(1, len(metrics['accuracy']) + 1))
 
     acc_vals = np.array(metrics['accuracy'])
-    f1_vals  = np.array(metrics['f1'])
+    f1_vals  = np.array(metrics['f1_score'])
     cum_acc  = np.cumsum(acc_vals) / samples
     cum_f1   = np.cumsum(f1_vals)  / samples
 

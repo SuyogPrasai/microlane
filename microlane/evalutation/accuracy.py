@@ -10,9 +10,9 @@ def calculate_accuracy(prediction: Prediction) -> float:
     
     sample = prediction.samples[-1]
     
-    gt_lanes: list[list[float]] = [lane.tolist() for lane in sample.lanes]
-    pred_lanes: list[list[float]] = [lane.tolist() for lane in prediction.lanes]
-    y_samples: list[float] = prediction.h_samples.tolist()
+    gt_lanes = sample.lanes
+    pred_lanes = prediction.lanes
+    y_samples= prediction.h_samples
     
     if not gt_lanes or not pred_lanes:
         return 0.0

@@ -70,10 +70,20 @@ class Experiment:
 
         self.prediction_path = self.folder / "prediction.json"
 
+        existing = []
+        if self.prediction_path.exists():
+            with self.prediction_path.open("r", encoding="utf-8") as f:
+                existing = json.load(f)
+            if isinstance(existing, dict):  # handle old single-object files
+                existing = [existing]
+
+        existing.append(payload)
+
         with self.prediction_path.open("w", encoding="utf-8") as f:
-            json.dump(payload, f, cls=_NumpyEncoder, indent=2)
+            json.dump(existing, f, cls=_NumpyEncoder, indent=2)
 
         return self.prediction_path.resolve()
+    
     
     def visualize_prediction(self, prediction: Prediction, show: bool = False) -> None:
 

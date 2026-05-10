@@ -11,7 +11,7 @@ def load_results(eval_file: Path) -> Dict:
 
     results = data if isinstance(data, list) else data.get('results', [])
 
-    metrics = ['accuracy', 'fp', 'fn', 'precision', 'recall', 'f1', 'run_time']
+    metrics = ['accuracy', 'precision', 'recall', 'f1_score', 'run_time']
 
     summary = {}
 
@@ -24,7 +24,7 @@ def load_results(eval_file: Path) -> Dict:
             'q3':   float(np.percentile(values, 75)),
         }
 
-    sorted_by_f1 = sorted(results, key=lambda r: r['f1'])
+    sorted_by_f1 = sorted(results, key=lambda r: r['f1_score'])
 
     output = {
         'summary': summary,

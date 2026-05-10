@@ -1,68 +1,58 @@
 import json
 from typing import List
 from pathlib import Path
+import cv2
+import numpy as np
 
-from microlane.evalutation.lane_eval import LaneEval
+from microlane.evalutation.evaluator import Evaluator
+from microlane.schemas.prediction import Prediction, Evaluation
+from microlane.schemas.sample import Sample
 
-def evaluate_scenario(scenario_path: Path, annotation_path: Path) -> List:
-    
-    output_folder = scenario_path.parent
-    
-    json_gt = [json.loads(line) for line in open(annotation_path)]
-    
-    json_pred = load_predictions(scenario_path)
-    
-    gt_by_file = {gt['raw_file']: gt for gt in json_gt}
-    
-    results = []
 
-    for prediction in json_pred:
-        
-        raw_file = prediction['raw_file']
-        
-        gt = gt_by_file.get(raw_file)
-        
-        if gt is None:
+def evaluate_scenario(scenario: Path) -> List[Evaluation]:
+
+    predictions = load_predictions(scenario)
+    
+    evaluator = Evaluator(predictions)
             
-            print(f"No ground truth found for: {raw_file}")
+    evaluations = evaluator.evaluate()
             
-            continue
-        
-        pred_lanes = prediction['lanes']
-        
-        run_time = prediction['run_time']
-        
-        gt_lanes = gt['lanes']
-        
-        h_samples = gt['h_samples']
-        
-        accuracy, fp, fn = LaneEval.bench(pred_lanes, gt_lanes, h_samples, run_time)
+    return evaluations
 
-        precision = 1 - fp
-        
-        recall = 1 - fn
-        
-        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
-        
-        results.append({
-            'raw_file': raw_file,
-            'accuracy': accuracy,
-            'fp': fp,
-            'fn': fn,
-            'run_time': run_time,
-            'precision': precision,
-            'recall': recall,
-            'f1': f1
-        })
-        
-    return results
+def load_predictions(predictions_path: Path) -> List[Prediction]:
+    with open(predictions_path) as f:
+        data = json.loads(f.read())
 
-def load_predictions(predictions_path: Path) -> List:
+    if isinstance(data, dict):
+        data = [data]
+
+    return [
+        Prediction(
+            lanes=d['lanes'],
+            h_samples=d['h_samples'],
+            run_time=d['run_time'],
+            samples=[s for s in (_load_sample(raw) for raw in d.get('samples', [])) if s is not None]
+        )
+        for d in data
+    ]
+
+
+def _load_sample(s: dict) -> Sample | None:
+    image = cv2.imread(s['image_path'])
+    if image is None:
+        return None
     
-    with open(predictions_path, "r") as file:
-        
-        content = file.read().strip()
+    assert isinstance(image, np.ndarray)
     
-        json_pred: List = json.loads(content)
-        
-    return json_pred
+    return Sample(
+        image=image,
+        image_path=s['image_path'],
+        lanes=s['lanes'],
+        h_samples=s['h_samples'],
+        dataset=s['dataset'],
+        blur=s.get('blur', 0.0),
+        lighting=s.get('lighting', 1.0),
+        rotation=s.get('rotation', 0.0),
+        zoom=s.get('zoom', 1.0),
+        motion_blur=s.get('motion_blur', 0.0)
+    )
