@@ -6,7 +6,6 @@
 # Then, we will have different functiosn for contacting the different api's of the container
 # predict one, batch predict, etc
 
-import numpy as np
 import requests
 
 from microlane.models.model import Model
@@ -20,11 +19,10 @@ class UFLD(Model):
         
         super().__init__()
         
-        self.model_config = self.config.models.ultra_fast_lane_detection
-        
-        print(self.config)
-        
+        self.model_config = self.config.models.ufld
+                
         self.container_id = self.initialize_model(self.model_config)
+
 
     def predict(self, sample: Sample) -> Prediction:
         

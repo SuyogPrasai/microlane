@@ -1,33 +1,64 @@
-from typing import Tuple, List
-from schemas.api_schemas import Sample
 import numpy as np
-import cv2
+import torch  # pyright: ignore[reportMissingImports]
+import torchvision.transforms as transforms  # pyright: ignore[reportMissingImports]
+
+from PIL import Image
+
+from schemas.api_schemas import Sample
+from engine import UFLDEngine
+
 
 class PreProcessor:
-    
-    def __init__(self, target_size: Tuple[int, int]):
-        self.target_size = target_size
-        
-    def process(self, sample: Sample) -> Sample:
-        if sample.image is None:
-            raise ValueError(
-                f"Sample '{sample.image_path}' has no loaded image. "
-                "Call sample.load() before formatting."
-            )
- 
-        W, H = self.target_size
-        image: np.ndarray = sample.image
-         
-        resized = cv2.resize(image, (W, H), interpolation=cv2.INTER_LINEAR).astype(np.float32) / 127.5 - 1.0 # type: ignore ( c++ code badly typed so error )
-            
-        return Sample(
-            image_path=sample.image_path,
-            image=resized,
-            lanes=np.array(sample.lanes),
-            h_samples=np.array(sample.h_samples),
-            dataset=sample.dataset,
-            lighting=sample.lighting,
-            blur=sample.blur,
-            zoom=sample.zoom,
-            rotation=sample.rotation
+
+    def __init__(
+        self,
+        engine: UFLDEngine,
+    ) -> None:
+
+        self.engine = engine
+
+        self._img_transforms = transforms.Compose(
+            [
+                transforms.Resize(
+                    (
+                        self.engine._NET_H,
+                        self.engine._NET_W,
+                    )
+                ),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=(0.485, 0.456, 0.406),
+                    std=(0.229, 0.224, 0.225),
+                ),
+            ]
+        )
+
+    def process(
+        self,
+        sample: Sample,
+    ) -> torch.Tensor:
+
+        image = sample.image
+
+        image = np.squeeze(image)
+
+        if image.dtype != np.uint8:
+
+            if image.max() <= 1.0:
+                image = (
+                    image * 255.0
+                ).clip(0, 255)
+
+            image = image.astype(np.uint8)
+
+        rgb = image[:, :, ::-1].copy()
+
+        pil_img = Image.fromarray(rgb)
+
+        tensor: torch.Tensor = self._img_transforms(
+            pil_img
+        )
+
+        return tensor.unsqueeze(0).to(
+            self.engine.device
         )

@@ -1,0 +1,30 @@
+FROM python:3.12.10-slim
+
+LABEL maintainer="suyog224356@gmail.com"
+LABEL description="Docker container for lane detection using Robust Lane Detection Model - UNetLSTM"
+LABEL python_version="3.12.10"
+
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+RUN git clone https://github.com/qinnzou/Robust-Lane-Detection.git rld
+
+WORKDIR /app/rld
+
+COPY . .
+
+CMD ["python", "server.py"]

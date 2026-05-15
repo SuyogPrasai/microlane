@@ -13,19 +13,17 @@ class Sample:
     
     image_path: str
     image: np.ndarray
-    lanes: np.ndarray # x values
-    h_samples: np.ndarray # y values
+    lanes: np.ndarray # x values, 2D list
+    h_samples: np.ndarray # y values 1D list
     dataset: str
     
     # Image Augmentation features
     blur: float = 0.0
-    lighting: float = 1.0
+    lighting: float = 0.0
     rotation: float = 0.0
     zoom: float = 1.0
     motion_blur: float = 0.0
     
-    def __getitem__(self, key: str):
-        return getattr(self, key)
-    
-    def __setitem__(self, key: str, value):
-        return setattr(self, key, value)
+@dataclass
+class Sequence:
+    samples: List[Sample]

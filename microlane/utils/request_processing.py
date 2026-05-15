@@ -1,4 +1,7 @@
+## Responsbile for converting sample to payload, payload to prediction
+
 import numpy as np 
+from typing import List
 
 from microlane.schemas.sample import Sample
 from microlane.schemas.prediction import Prediction
@@ -17,7 +20,10 @@ def sample_to_payload(sample: Sample) -> dict:
         "rotation": sample.rotation,
         "motion_blur": sample.motion_blur
     }
-    
+
+def samples_to_payload(samples: List[Sample] ) -> List[dict]:
+    return [ sample_to_payload(sample) for sample in samples ]
+
     
 def payload_to_prediction(payload: dict) -> Prediction:
     return Prediction(
@@ -42,3 +48,4 @@ def payload_to_prediction(payload: dict) -> Prediction:
         h_samples=np.array(payload["h_samples"]),
         run_time=payload["run_time"]
     )
+    

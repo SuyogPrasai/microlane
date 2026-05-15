@@ -21,7 +21,6 @@ def infer(request: InferRequest, app_request: Request):
 
         response = prediction_to_response(prediction)
 
-        logger.info("Inference complete, returning response")
         return JSONResponse(content=response)
 
     except Exception as exc:

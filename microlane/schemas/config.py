@@ -1,28 +1,49 @@
 from dataclasses import dataclass, field
+from typing import List
 from pathlib import Path
 
-
-## Data
+@dataclass
+class Experiment:
+    experiment_directory: Path
+    testing_directory: Path
+    sample_length: int
+    inference_image_sampling_number: int
+    model: str
+    dataset: str
+    augmentation: str
 
 @dataclass
-class DatasetConfig:
+class Dataset:
     name: str
     path: Path
     annotation_file: Path
-    enabled: bool = True
+    dimensions: List[int]
 
 @dataclass
-class DatasetsConfig:
-    tusimple: DatasetConfig
-    custom_dataset: DatasetConfig
+class Datasets:
+    tusimple: Dataset
+    microlane: Dataset
+    modified_microlane: Dataset
 
 @dataclass
-class AugmentationRangesConfig:
+class Colors:
+    lane_colors: List[List[int]]
+    
+@dataclass
+class Constants:
+    h_samples: List[int]
+    default_port: int
+    colors: Colors
+
+@dataclass
+class AugmentationRanges:
     motion_blur_range: tuple[float, float]
     lighting_range: tuple[float, float]
     blur_range: tuple[float, float]
     zoom_range: tuple[float, float]
     rotation_range: tuple[float, float]
+    shake_rotation_range: tuple[float, float]
+    shake_motion_blur_range: tuple[float, float]
 
 @dataclass
 class AugmentationPreset:
@@ -33,61 +54,29 @@ class AugmentationPreset:
     motion_blur: float
     shake: bool
 
-    def __getitem__(self, key: str) -> float | bool:
-        return getattr(self, key)
-
 @dataclass
-class AugmentationConfig:
-    ranges: AugmentationRangesConfig
+class Augmentation:
+    ranges: AugmentationRanges
     presets: dict[str, AugmentationPreset] = field(default_factory=dict)
     
- 
 @dataclass
-class DataConfig:
-    datasets: DatasetsConfig
-    augmentation: AugmentationConfig
-
-
-## Models
-
-@dataclass
-class ModelConfig:
+class Model:
     name: str
     container_folder: Path
     image_name: str
     port: int
-    enabled: bool = True
 
 @dataclass
-class ModelsConfig:
-    lanenet: ModelConfig
-    ultra_fast_lane_detection: ModelConfig
-
-
-## Pipeline
-
-@dataclass
-class PipelineConfig:
-    name: str
-    version: str
-    description: str
-    default_port: int = 8000
-
-
-## Experiment
-
-@dataclass
-class ExperimentConfig:
-    experiment_directory: Path
-    testing_directory: Path
-    sample_length: int
-    inference_image_sampling_number: int
-
-
-## Root
+class Models:
+    lanenet: Model
+    ufld: Model
+    rld_a: Model
+    rld_b: Model
+    
 @dataclass
 class Config:
-    pipeline: PipelineConfig
-    data: DataConfig
-    models: ModelsConfig
-    experiment: ExperimentConfig
+    experiment: Experiment
+    constants: Constants
+    datasets: Datasets
+    models: Models
+    augmentation: Augmentation

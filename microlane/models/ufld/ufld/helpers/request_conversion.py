@@ -30,6 +30,7 @@ def prediction_to_response(pred: Prediction) -> dict:
                 "lanes": np.array(sample.lanes).tolist(),
                 "h_samples": np.array(sample.h_samples).tolist(),
                 "dataset":    sample.dataset,
+                
                 "blur": sample.blur,
                 "zoom": sample.zoom,
                 "rotation": sample.rotation,

@@ -1,7 +1,6 @@
 import yaml
 from pathlib import Path
 from dataclasses import fields
-from typing import Dict
 from typing import get_type_hints, get_origin, get_args
 
 from microlane.schemas.config import Config
@@ -48,7 +47,7 @@ def _from_dict(cls, data: dict) -> Config:
     return cls(**kwargs)
 
 
-def load_config(config_path: Path = Path("/home/suyog/desktop/projects/microlane/configs/config.yaml")) -> Config:
+def load_config(config_path: Path | str = Path("../config.yaml")) -> Config:
     
     config_path = Path(config_path)
     

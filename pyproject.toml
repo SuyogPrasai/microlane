@@ -1,19 +1,19 @@
 [project]
 name = "microlane"
-version = "1.0.0"
+version = "0.2.0"
 description = "Evaluating how well modern lane detection models hold up when deployed on small-scale 1/10 RC cars"
 authors = [
     {name = "suyog prasai",email = "suyog224356@gmail.com"}
 ]
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = "3.12.10"
 dependencies = [
+    "matplotlib (>=3.10.9,<4.0.0)",
     "docker (>=7.1.0,<8.0.0)",
-    "numpy (>=2.4.4,<3.0.0)",
     "opencv-python (>=4.13.0.92,<5.0.0.0)",
-    "pyyaml (>=6.0.3,<7.0.0)",
+    "numpy (>=2.4.4,<3.0.0)",
     "click (>=8.3.3,<9.0.0)",
-    "filetype (>=1.2.0,<2.0.0)"
+    "pyyaml (>=6.0.3,<7.0.0)"
 ]
 
 
@@ -21,11 +21,9 @@ dependencies = [
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+
 [tool.poetry]
 packages = [
     { include = "microlane" },
-    { include = "scripts" }
+    # { include = "scripts" }
 ]
-
-[tool.poetry.scripts]
-microlane = "scripts.microlane:main"

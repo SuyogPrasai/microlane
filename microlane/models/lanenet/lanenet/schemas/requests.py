@@ -1,6 +1,6 @@
 from pydantic import BaseModel, validator # pyright: ignore[reportMissingImports]
 import numpy as np # pyright: ignore[reportMissingImports]
-from typing import List, Optional # pyright: ignore[reportMissingImports]
+from typing import List # pyright: ignore[reportMissingImports]
 
 from schemas.api_schemas import Sample # pyright: ignore[reportMissingImports]
 

@@ -1,4 +1,5 @@
-import numpy as np
+# Interface for LaneNet model in the pipeline
+
 import requests
 
 from microlane.models.model import Model
@@ -16,10 +17,11 @@ class LaneNet(Model):
                 
         self.container_id = self.initialize_model(self.model_config)
     
+
     def predict(self, sample: Sample) -> Prediction:
         
         url = f'http://localhost:{self.model_config.port}/infer'
-                
+        
         payload = sample_to_payload(sample)
         
         response = requests.post(url, json={"sample": payload})

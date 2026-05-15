@@ -1,53 +1,43 @@
-import json
-from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
 
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
+from zoneinfo import ZoneInfo
+from datetime import datetime
 import numpy as np
+import json
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from pathlib import Path
 
 from microlane.schemas.prediction import Prediction
-from microlane.schemas.sample import Sample
 
-
+_PRED_COLOURS = ["#00FF7F", "#00CFFF", "#FFD700", "#FF69B4", "#FF8C00", "#BF5FFF"]
+_GT_COLOURS   = ["#006400", "#005F8A", "#8B6914", "#8B0040", "#8B4500", "#5A0080"]
 
 class _NumpyEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, np.ndarray):
             return o.tolist()
-        if isinstance(o, np.integer):
+        if isinstance(o, (np.integer,)):
             return int(o)
-        if isinstance(o, np.floating):
+        if isinstance(o, (np.floating,)):
             return float(o)
         return super().default(o)
 
-
-_PRED_COLOURS = ["#00FF7F", "#00CFFF", "#FFD700", "#FF69B4", "#FF8C00", "#BF5FFF"]
-_GT_COLOURS   = ["#006400", "#005F8A", "#8B6914", "#8B0040", "#8B4500", "#5A0080"]
-
-
-@dataclass
-class Experiment:
-
-    base_dir: Path
-    folder: Path = field(init=False)
-    prediction_path: Optional[Path] = field(init=False, default=None)
+class Experiment():
     
+    def __init__(self, base_dir) -> None:
 
-    def __post_init__(self):
+        self.base_dir = Path(base_dir)
 
-        self.base_dir = Path(self.base_dir)
-
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(tz=ZoneInfo("Asia/Kathmandu")).strftime("%Y-%m-%d_%H-%M-%S")
+        
         self.folder = self.base_dir / f"experiment_{timestamp}"
+        
         self.folder.mkdir(parents=True, exist_ok=True)
+        
         self.visualization_count = 0
-
-
+        
     def store_prediction(self, prediction: Prediction) -> Path:
-
+        
         payload = {
             "run_time":  prediction.run_time,
             "lanes":     prediction.lanes,
@@ -67,76 +57,71 @@ class Experiment:
                 for s in prediction.samples
             ],
         }
-
+        
         self.prediction_path = self.folder / "prediction.json"
 
         existing = []
+        
         if self.prediction_path.exists():
             with self.prediction_path.open("r", encoding="utf-8") as f:
                 existing = json.load(f)
-            if isinstance(existing, dict):  # handle old single-object files
-                existing = [existing]
-
+                
         existing.append(payload)
 
         with self.prediction_path.open("w", encoding="utf-8") as f:
-            json.dump(existing, f, cls=_NumpyEncoder, indent=2)
+            json.dump(existing, f, indent=2, cls=_NumpyEncoder)
 
         return self.prediction_path.resolve()
     
+    def visualize_prediction(self, prediction: Prediction, show: bool = False):
+        
+        sample = prediction.samples[-1]
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+
+        title = Path(sample.image_path).parts
+        
+        ax.set_title("/".join(title[-3:]), fontsize=8)
+          
+        img = mpimg.imread(sample.image_path)
+        
+        ax.imshow(img)
+
+        ax.axis("off")
+        
+        for lane_idx, lane in enumerate(sample.lanes):
+        
+            colour = _GT_COLOURS[lane_idx % len(_GT_COLOURS)]
+            
+            valid = [(x, y) for x, y in zip(lane, sample.h_samples) if x != -2]
+            
+            if valid:
+
+                xs, ys = zip(*valid)
+                
+                ax.plot(xs, ys, color=colour, linewidth=2, linestyle="--", label=f"GT Lane {lane_idx}")
     
-    def visualize_prediction(self, prediction: Prediction, show: bool = False) -> None:
+        
+        for lane_idx, lane in enumerate(prediction.lanes):
+        
+            colour = _PRED_COLOURS[lane_idx % len(_PRED_COLOURS)]
+            
+            valid = [(x, y) for x, y in zip(lane, prediction.h_samples) if x != -2]
+            
+            if valid:
+                xs, ys = zip(*valid)
+                
+                ax.plot(xs, ys, color=colour, linewidth=2, label=f"Pred Lane {lane_idx}")
+                
+        ax.legend(loc="upper right", fontsize=7, framealpha=0.6)
 
-        sample: Sample = prediction.samples[-1]
+        out_path = self.folder / f"viz_{self.visualization_count:04d}.png"
+        
+        fig.savefig(out_path, bbox_inches="tight", dpi=150)
 
-        h_pred = np.asarray(prediction.h_samples)
-        h_gt   = np.asarray(sample.h_samples)
-
-        fig, axes = plt.subplots(1, 2, figsize=(16, 6))
-        fig.suptitle(
-            f"dataset: {sample.dataset}  |  run_time: {prediction.run_time:.3f}s",
-            fontsize=12, fontweight="bold",
-        )
-
-        panels = [
-            (axes[0], prediction.lanes, h_pred, _PRED_COLOURS, "Predicted lanes"),
-            (axes[1], sample.lanes,     h_gt,   _GT_COLOURS,   "Ground truth lanes"),
-        ]
-
-        h, w = sample.image.shape[:2]
-
-        for ax, lanes_arr, h_samples, colours, title in panels:
-
-            ax.imshow(sample.image, origin="upper")
-            ax.set_title(title, fontsize=11)
-            ax.axis("off")
-            ax.set_xlim(0, w)
-            ax.set_ylim(h, 0)
-
-            legend_handles = []
-
-            for lane_idx, lane_xs in enumerate(np.asarray(lanes_arr)):
-
-                colour  = colours[lane_idx % len(colours)]
-                lane_xs = np.asarray(lane_xs)
-                valid   = lane_xs != -2
-                xs, ys  = lane_xs[valid], h_samples[valid]
-
-                if xs.size == 0:
-                    continue
-
-                ax.scatter(xs, ys, s=6, color=colour, linewidths=0)
-                ax.plot(xs, ys, color=colour, linewidth=1.5, alpha=0.7)
-                legend_handles.append(mpatches.Patch(color=colour, label=f"Lane {lane_idx + 1}"))
-
-            if legend_handles:
-                ax.legend(handles=legend_handles, loc="upper right", fontsize=8, framealpha=0.6)
-
-        plt.tight_layout()
-        out_path = self.folder / "inference" / f"visualization_{self.visualization_count:04d}.png"
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(out_path, dpi=150, bbox_inches="tight")
         self.visualization_count += 1
-
+        
         if show:
             plt.show()
+
+        plt.close(fig)

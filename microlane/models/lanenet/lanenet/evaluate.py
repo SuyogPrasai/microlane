@@ -1,36 +1,28 @@
-import tensorflow as tf  # pyright: ignore[reportMissingModuleSource, reportMissingImports]
-import numpy as np  # pyright: ignore[reportMissingImports]
-from typing import Tuple, List  # pyright: ignore[reportMissingImports]
-
 from schemas.api_schemas import Sample  # pyright: ignore[reportMissingImports]
 from schemas.api_schemas import Prediction  # pyright: ignore[reportMissingImports]
 
 from helpers.preprocessing import PreProcessor # pyright: ignore[reportMissingImports]
-from engine import LaneNet2Engine  # pyright: ignore[reportMissingImports]
+from helpers.postprocessing import PostProcessor # pyright: ignore[reportMissingImports]
+from engine import LaneNetEngine  # pyright: ignore[reportMissingImports]
 
-from lanenet_model import lanenet_postprocess # type: ignore
-from local_utils.config_utils import parse_config_utils # type: ignore
-
-CFG = parse_config_utils.lanenet_cfg
 
 class LaneNet():
     
-    def __init__(
-        self,
-        weights_path,
-        ):
+    def __init__(self, weights_path) -> None:
         
         self.weights_path = weights_path
-                                
-        self.preprocessor = PreProcessor(target_size=(512, 256))
-                             
-        self._engine = LaneNet2Engine(weights_path)
-
+        
+        self.preprocessor = PreProcessor()
+        
+        self.postprocessor = PostProcessor()
+        
+        self.engine = LaneNetEngine(
+            
+            weights_path=weights_path
+        )        
     
     def infer(self, picture: Sample) -> Prediction:
         
-        # I probably dont need the postprocessing step here since I am creating a unified preprocessing pipeline
-                
         processed_image = self.preprocessor.process(picture)
         
         if processed_image.image is None:
@@ -39,88 +31,11 @@ class LaneNet():
                 "This should not happen. Please check the preprocessing step."
             )
             
-        binary_seg, instance_seg, t_cost = self._engine.predict(processed_image.image)
-
-        postprocessor = lanenet_postprocess.LaneNetPostProcessor(cfg=CFG)
-
-        postprocess_result = postprocessor.postprocess(
-            
-            binary_seg_result=binary_seg[0],
-            
-            instance_seg_result=instance_seg[0],
-            
-            source_image=picture.image.copy(),
-            
-            with_lane_fit=True, # Need to change don't know what does but true is default on the repo
-            
-            data_source='tusimple'
-            
+        binary_seg, instance_seg, t_cost = self.engine.predict(processed_image.image)
+        
+        return self.postprocessor.process(
+            sample=picture,
+            binary_segmentation=binary_seg,
+            instance_segmentation=instance_seg,
+            run_time=t_cost
         )
-        
-        # mask_image = postprocess_result['mask_image']
-
-        fit_params = postprocess_result['fit_params']
-
-        h_samples = picture.h_samples
-        
-        lanes = []
-        
-        if fit_params is not None:
-            
-            remap_x = postprocessor._remap_to_ipm_x
-            
-            remap_y = postprocessor._remap_to_ipm_y
-            
-            ipm_h, ipm_w = remap_x.shape
-            
-            
-            for fit_param in fit_params:
-                
-                fit_param = np.array(fit_param, dtype="float64")
-
-                plot_y = np.linspace(10, ipm_h, ipm_h - 10)
-
-                fit_x = fit_param[0] * (plot_y ** 2) + fit_param[1] * plot_y + fit_param[2] # type: ignore
-                
-                src_lane_pts = []
-                
-                for i in range(0, len(plot_y), 5):
-                    ipm_xi = int(np.clip(fit_x[i], 0, ipm_w - 1))
-                    ipm_yi = int(plot_y[i])
-                    src_x = remap_x[ipm_yi, ipm_xi]
-                    src_y = remap_y[ipm_yi, ipm_xi]
-                    if src_x > 0 and src_y > 0:
-                        src_lane_pts.append([src_x, src_y])
-
-                if len(src_lane_pts) == 0:
-                    lanes.append([-2] * len(h_samples))
-                    continue
-
-                pts = np.array(src_lane_pts, dtype="float32")  # Fix 2: string form instead of np.float32
-
-                lane_xs = []
-
-                for y in h_samples.tolist():
-                    diff = np.abs(pts[:, 1] - y)
-                    if diff.min() > 10:
-                        lane_xs.append(-2)
-                    else:
-                        lane_xs.append(int(round(pts[np.argmin(diff), 0])))
-
-                lanes.append(lane_xs)
-                
-        return Prediction(
-            samples=[picture],
-            lanes=np.array(lanes),
-            h_samples=np.array(h_samples),
-            run_time=float(t_cost)
-        )
-    
-    def close(self):
-        self._engine.close()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *_):
-        self.close()

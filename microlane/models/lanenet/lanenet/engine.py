@@ -1,22 +1,22 @@
 import numpy as np  # pyright: ignore[reportMissingImports]
+import time
 import tensorflow as tf  # pyright: ignore[reportMissingModuleSource, reportMissingImports]
 from typing import Tuple  # pyright: ignore[reportMissingImports]
 
 from lanenet_model import lanenet # pyright: ignore[reportMissingImports]
 from local_utils.config_utils import parse_config_utils # pyright: ignore[reportMissingImports]
 from local_utils.log_util import init_logger # pyright: ignore[reportMissingImports]
-import time# pyright: ignore[reportMissingImports]
 
-class LaneNet2Engine():
+
+class LaneNetEngine():
     
     def __init__(self, weights_path: str) -> None:
         
         self.weights_path = weights_path
         
         self.CFG = parse_config_utils.lanenet_cfg
-        
-        # Initializing the initial parameters for the engine
-         
+
+
         self._input_tensor = None
 
         self._binary_seg_ret = None
@@ -24,7 +24,8 @@ class LaneNet2Engine():
         self._instance_seg_ret = None
 
         self._sess = None
-        
+
+
         self._build_graph()
     
     
@@ -59,6 +60,7 @@ class LaneNet2Engine():
         
         return binary_seg, instance_seg, t_cost
     
+
     def close(self) -> None:
         """
         Clean up resources, close the TensorFlow session.
@@ -70,9 +72,9 @@ class LaneNet2Engine():
             self._sess.close()
             
             self._sess = None
-
-            
-    def _build_graph(self) -> None:
+    
+    
+    def _build_graph(self):
         
         # Define the input tensor
         

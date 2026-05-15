@@ -13,8 +13,8 @@ class Prediction:
     
     """
     samples: List[Sample]
-    lanes: np.ndarray # x values
-    h_samples: np.ndarray # y values
+    lanes: np.ndarray # x values, 2D list
+    h_samples: np.ndarray # y values 1D list
     run_time: float
     
     

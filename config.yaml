@@ -1,0 +1,120 @@
+experiment:
+  testing_directory: "/home/suyog/desktop/testing/microlane/results/testing"
+  # experiment_directory: "/home/suyog/desktop/testing/microlane/results/experiment"
+  experiment_directory: "/home/suyog/desktop/testing/microlane/results/testing"
+  sample_length: 450
+  inference_image_sampling_number: 10
+  model: "ufld"
+  dataset: "tusimple"
+  augmentation: "normal"
+
+constants:
+  h_samples: [
+    160, 170, 180, 190, 200, 210, 220, 230, 240, 250,
+    260, 270, 280, 290, 300, 310, 320, 330, 340, 350,
+    360, 370, 380, 390, 400, 410, 420, 430, 440, 450,
+    460, 470, 480, 490, 500, 510, 520, 530, 540, 550,
+    560, 570, 580, 590, 600, 610, 620, 630, 640, 650,
+    660, 670, 680, 690, 700, 710 ]
+  default_port: 8000
+  colors:
+    lane_colors:
+      - [255, 0, 0]
+      - [0, 255, 0]
+      - [0, 0, 255]
+      - [0, 255, 255]
+
+datasets:
+  tusimple:
+    name: tusimple
+    path: /home/suyog/assets/datasets/TuSimple/TUSimple
+    annotation_file: /home/suyog/assets/datasets/TuSimple/test_label_new.json
+    dimensions: [720, 1280]
+    
+  microlane:
+    name: microlane
+    path: /home/suyog/desktop/testing/microlane/results/normalized_microlane/microlane
+    annotation_file: /home/suyog/desktop/testing/microlane/results/normalized_microlane/annotations.json
+    dimensions: [1080, 1920]
+
+  modified_microlane:
+    name: modified_microlane
+    path: /home/suyog/desktop/testing/microlane/results/normalized_microlane/modified_microlane
+    annotation_file: /home/suyog/desktop/testing/microlane/results/normalized_microlane/annotations.json
+    dimensions: [1080, 1920]
+     
+models:
+  lanenet:
+    name: lanenet
+    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/lanenet/lanenet"
+    image_name: "lanenet_image:latest"
+    port: 8001
+
+  ufld:
+    name: ufld
+    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/ufld/ufld"
+    image_name: "ufld_image:latest"
+    port: 8002
+
+  rld_a:
+    name: rld_a
+    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/rld_a/rld_a"
+    image_name: "rld_a_image:latest"
+    port: 8003
+
+  rld_b:
+    name: rld_b
+    container_folder: "/home/suyog/desktop/testing/microlane/microlane/models/rld_b/rld_b"
+    image_name: "rld_b_image:latest"
+    port: 8004
+
+augmentation:
+  ranges:
+      motion_blur_range: [0.0, 0.1]
+      lighting_range: [-1.0, 1.0]
+      blur_range: [0.0, 1.0]
+      zoom_range: [1.0, 3]
+      rotation_range: [0.0, 360.0]
+      shake_rotation_range: [-5.0, 5.0]      # degrees, random per-sample
+      shake_motion_blur_range: [0.1, 0.4]
+
+  presets:
+    normal:
+      blur: 0.0
+      rotation: 0.0
+      zoom: 1.0
+      lighting: 0.0
+      motion_blur: 0.0
+      shake: false
+
+    lighting_d:
+      blur: 0.0
+      rotation: 0.0
+      zoom: 1.0
+      lighting: -0.4
+      motion_blur: 0.0
+      shake: false
+
+    lighting_b:
+      blur: 0.0
+      rotation: 0.0
+      zoom: 1.0
+      lighting: 0.4
+      motion_blur: 0.0
+      shake: false
+
+    motion_blur:
+      blur: 0.0
+      rotation: 0.0
+      zoom: 1.0
+      lighting: 0.0
+      motion_blur: 0.6
+      shake: false
+
+    camera_shake:
+      blur: 0.0
+      rotation: 0.0          # overridden at runtime when shake: true
+      zoom: 1.0
+      lighting: 0.0
+      motion_blur: 0.0       # overridden at runtime when shake: true
+      shake: true

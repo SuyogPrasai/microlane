@@ -1,4 +1,9 @@
+# This is the low level entry point for interacting with the docker api running in the host machine
+# Can start a container from a image, can restart a container, can build a image, can stop a container
+# Can also get lists of all active images, and containers ( all = True )
+
 import docker
+from docker.types import DeviceRequest
 from docker.models.containers import Container
 from docker.models.images import Image
 
@@ -12,13 +17,19 @@ class ContainerManager:
 
     def __init__(self) -> None:
         self.client = docker.from_env()
-
-    def start_container(self, image_name: str, port: int):
+        
+    def start_container(self, image_name: str, port: int, use_gpu: bool = True):
         """Create and start a new container from the given image."""
+        device_requests = (
+            [DeviceRequest(count=-1, capabilities=[["gpu"]])]
+            if use_gpu
+            else []
+        )
         container = self.client.containers.run(
             image_name,
             detach=True,
-            ports={f"{config.pipeline.default_port}/tcp": port},
+            ports={f"{config.constants.default_port}/tcp": port},
+            device_requests=device_requests,
         )
         return container
 
