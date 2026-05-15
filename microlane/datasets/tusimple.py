@@ -2,7 +2,7 @@
 # Source of TuSimple Dataset: https://www.kaggle.com/datasets/manideep1108/tusimple
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Iterator
 import cv2, json
 import numpy as np
 
@@ -46,7 +46,7 @@ class TuSimple():
         return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 
-    def load(self, number: int = 500) -> List[Sample]:
+    def load(self, number: int = 450) -> List[Sample]:
 
         samples: List[Sample] = []
 
@@ -82,9 +82,7 @@ class TuSimple():
 
         return samples
 
-    def load_sequences(self, number: int = 500, sequence_length: int = 5) -> List[Sequence]:
-
-        sequences: List[Sequence] = []
+    def load_sequences(self, number: int = 450, sequence_length: int = 5) -> Iterator[Sequence]:
 
         with open(self.annotation_file_path, 'r') as f:
 
@@ -152,6 +150,4 @@ class TuSimple():
                     )
                 )
 
-                sequences.append(Sequence(samples=sequence_samples))
-
-        return sequences
+                yield Sequence(samples=sequence_samples)

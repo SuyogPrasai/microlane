@@ -1,4 +1,4 @@
-from microlane.schemas.sample import Sample
+from microlane.schemas.sample import Sample, Sequence
 
 from microlane.augmentation.filters.blur import blur
 from microlane.augmentation.filters.lighting import lighting
@@ -39,3 +39,9 @@ class Augmentor:
             sample = rotation(sample, preset.rotation)
 
         return sample
+    
+    def apply_preset_to_sequence(self, sequence: Sequence, preset_name: str) -> Sequence:
+    
+        return Sequence(
+            samples=[self.apply_preset(sample, preset_name) for sample in sequence.samples]
+        )

@@ -83,7 +83,7 @@ class Experiment():
         
         ax.set_title("/".join(title[-3:]), fontsize=8)
           
-        img = mpimg.imread(sample.image_path)
+        img = sample.image
         
         ax.imshow(img)
 
@@ -114,8 +114,12 @@ class Experiment():
                 ax.plot(xs, ys, color=colour, linewidth=2, label=f"Pred Lane {lane_idx}")
                 
         ax.legend(loc="upper right", fontsize=7, framealpha=0.6)
-
-        out_path = self.folder / f"viz_{self.visualization_count:04d}.png"
+        
+        out_folder = self.folder / "inference"
+        
+        out_folder.mkdir(parents=True, exist_ok=True)
+        
+        out_path = out_folder  / f"viz_{self.visualization_count:04d}.png"
         
         fig.savefig(out_path, bbox_inches="tight", dpi=150)
 

@@ -1,7 +1,7 @@
 FROM python:3.12.10-slim
 
 LABEL maintainer="suyog224356@gmail.com"
-LABEL description="Docker container for lane detection using Robust Lane Detection Model - UNetLSTM"
+LABEL description="Docker container for lane detection using Robust Lane Detection Model - SegNetLSTM"
 LABEL python_version="3.12.10"
 
 RUN apt-get update && apt-get install -y \

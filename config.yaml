@@ -3,9 +3,9 @@ experiment:
   experiment_directory: "/home/suyog/desktop/projects/microlane/results/experiment"
   sample_length: 10
   inference_image_sampling_number: 5
-  model: "lanenet"
-  dataset: "tusimple"
-  augmentation: "normal"
+  model: "rld_a"
+  dataset: "modified_microlane"
+  augmentation: "lighting_b"
 
 constants:
   h_samples: [

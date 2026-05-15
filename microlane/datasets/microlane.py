@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Iterator
 import cv2, json
 import numpy as np
 from collections import defaultdict
@@ -44,7 +44,7 @@ class MicroLane():
         return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 
-    def load(self, number: int = 500) -> List[Sample]:
+    def load(self, number: int = 450) -> List[Sample]:
 
         samples: List[Sample] = []
 
@@ -81,19 +81,15 @@ class MicroLane():
         return samples
 
 
-    def load_sequences(self, number: int = 500, sequence_length: int = 5) -> List[Sequence]:
+    def load_sequences(self, number: int = 450, sequence_length: int = 5) -> Iterator[Sequence]:
 
         # Group loaded samples by clip folder, preserving frame order
         clips: defaultdict[str, List[Sample]] = defaultdict(list)
 
         with open(self.annotation_file_path, 'r') as f:
 
-            for i, line in enumerate(f):
-                if i >= number:
-                    break
-
+            for line in f:
                 data = json.loads(line)
-
                 image_path = self.folder_path / data['raw_file']
 
                 if not image_path.exists():
@@ -118,16 +114,17 @@ class MicroLane():
                     )
                 )
 
-        # Sliding window over each clip's frames
-        sequences: List[Sequence] = []
+        yielded = 0
 
         for clip_name, samples in clips.items():
 
             if len(samples) < sequence_length:
-                print(f"Warning: Clip [{clip_name}] has {len(samples)} frames, fewer than sequence length {sequence_length}, skipping.")
+                print(f"Warning: Clip [{clip_name}] has {len(samples)} frames, fewer than sequence_length {sequence_length}, skipping.")
                 continue
 
             for start in range(len(samples) - sequence_length + 1):
-                sequences.append(Sequence(samples=samples[start : start + sequence_length]))
+                yield Sequence(samples=samples[start : start + sequence_length])
+                yielded += 1
 
-        return sequences
+                if yielded >= number:
+                    return
