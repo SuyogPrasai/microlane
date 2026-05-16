@@ -16,17 +16,3 @@ class Prediction:
     lanes: np.ndarray # x values, 2D list
     h_samples: np.ndarray # y values 1D list
     run_time: float
-    
-    
-@dataclass
-class Evaluation:
-    """
-    Represents a common evaluation for all models,
-    Process each model's prediction and contruct a common evaluation which can be compared across models
-    
-    """
-    predictions: Prediction
-    accuracy: float
-    precision: float
-    recall: float
-    f1_score: float
