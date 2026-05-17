@@ -26,5 +26,8 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 packages = [
     { include = "microlane" },
-    # { include = "scripts" }
+    { include = "scripts" }
 ]
+
+[tool.poetry.scripts]
+microlane = "scripts.cli:main"

@@ -26,4 +26,4 @@ class PredictionFile:
     file: List
     model: str
     dataset: str
-    augmentation: str
+    augmentation: dict
