@@ -3,7 +3,7 @@
 from microlane.schemas.prediction import Prediction
 from microlane.schemas.evaluation import Evaluation
 
-from microlane.evaluation.tusimple_benchmark import calculate_f1_score
+from microlane.evaluation.tusimple_benchmark import calculate_tusimple_benchmarks
 from microlane.evaluation.iou import calculate_iou
    
     
@@ -15,7 +15,7 @@ def evaluate_prediction(
             augmentation: str
             ) -> Evaluation:
             
-    accuracy, f1_score, precision, recall = calculate_f1_score(prediction)
+    accuracy, fn, fp = calculate_tusimple_benchmarks(prediction)
     
     iou = calculate_iou(prediction)
     
@@ -28,10 +28,9 @@ def evaluate_prediction(
         processed_samples = [sample.image_path for sample in prediction.samples],
         run_time=prediction.run_time,
         accuracy=accuracy,
-        f1_score=f1_score,
         IOU=iou,
-        precision=precision,
-        recall=recall            
+        fn=fn,
+        fp=fp
     )
                 
     return evaluation

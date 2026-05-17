@@ -11,7 +11,8 @@ from scripts.core.evaluation_to_csv import store_evaluation
 
 @click.command()
 @click.option('--path', '-p', required=True, help='Path to the experiment folder to evaluate')
-def evaluate(path: str):
+@click.option('--csv', '-c', required=True, help='Path to the CSV file where results are stored')
+def evaluate(path: str, csv: str):
     
     experiment_number = 1
     
@@ -28,24 +29,25 @@ def evaluate(path: str):
         for prediction in prediction_data:
             
             prediction_object = Prediction(
-                lanes=prediction.lanes,
-                h_samples=prediction.h_samples,
-                run_time=prediction.run_time,
+                lanes=prediction["lanes"],
+                h_samples=prediction["h_samples"],
+                run_time=prediction["run_time"],
                 samples=[
                     Sample(
-                        image_path=sample.image_path,
-                        image=read_image(sample.image_path),
-                        lanes=sample.lanes,
-                        h_samples=sample.h_samples,
-                        dataset=sample.dataset,
-                        blur=sample.blur,
-                        lighting=sample.lighting,
-                        rotation=sample.rotation,
-                        zoom=sample.zoom,
-                        motion_blur=sample.motion_blur,
+                        image_path=sample["image_path"],
+                        image=read_image(sample["image_path"]),
+                        lanes=sample["lanes"],
+                        h_samples=sample["h_samples"],
+                        dataset=sample["dataset"],
+                        blur=sample["blur"],
+                        lighting=sample["lighting"],
+                        rotation=sample["rotation"],
+                        zoom=sample["zoom"],
+                        motion_blur=sample["motion_blur"],
                     )
-                    for sample in prediction.samples
-                ])
+                    for sample in prediction["samples"]
+                ]
+            )
             
             evaluation = evaluate_prediction(
                 prediction=prediction_object,
@@ -57,4 +59,4 @@ def evaluate(path: str):
             
             experiment_number+=1
             
-            store_evaluation(evaluation=evaluation, csv_path=path)
+            store_evaluation(evaluation=evaluation, csv_path=csv)

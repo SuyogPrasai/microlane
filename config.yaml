@@ -1,11 +1,11 @@
 experiment:
   testing_directory: "/home/suyog/desktop/projects/microlane/results/testing"
-  experiment_directory: "/home/suyog/desktop/projects/microlane/results/experiment/tusimple/rld_b/camera_shake"
+  experiment_directory: "/home/suyog/desktop/projects/microlane/results/experiment/microlane/ufld/lighting_d"
   sample_length: 450
   inference_image_sampling_number: 10
-  dataset: "tusimple"
-  model: "rld_b"
-  augmentation: "camera_shake"
+  dataset: "microlane"
+  model: "ufld"
+  augmentation: "lighting_d"
 
 constants:
   h_samples: [

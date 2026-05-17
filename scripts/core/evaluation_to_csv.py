@@ -8,7 +8,7 @@ from microlane.schemas.evaluation import Evaluation
 FIELDS = [
     "experiment_number", "dataset", "model", "augmentation",
     "raw_file", "processed_samples", "run_time",
-    "f1_score", "accuracy", "IOU", "precision", "recall"
+    "accuracy", "IOU", "fn", "fp"
 ]
 
 def store_evaluation(

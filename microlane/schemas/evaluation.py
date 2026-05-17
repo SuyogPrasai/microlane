@@ -16,11 +16,10 @@ class Evaluation:
     raw_file: str
     processed_samples: List[str]
     run_time: float
-    f1_score: float
     accuracy: float
     IOU: float
-    precision: float
-    recall: float
+    fn: float
+    fp: float
     
 @dataclass
 class PredictionFile:

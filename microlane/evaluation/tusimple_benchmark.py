@@ -4,7 +4,7 @@ from microlane.schemas.prediction import Prediction
 from microlane.evaluation.core.lane_eval import LaneEval
 
 
-def calculate_f1_score(prediction: Prediction) -> Tuple[float, float, float, float]:
+def calculate_tusimple_benchmarks(prediction: Prediction) -> Tuple[float, float, float]:
     """
     Calculate Accuiracy, F1 score, precision, and recall for a prediction against
     the last sample's ground truth lanes.
@@ -19,7 +19,7 @@ def calculate_f1_score(prediction: Prediction) -> Tuple[float, float, float, flo
         Tuple of (f1_score, precision, recall), each in [0.0, 1.0].
     """
     if not prediction.samples:
-        return 0.0, 0.0, 0.0, 0.0
+        return 0.0, 0.0, 0.0
 
     sample = prediction.samples[-1]
 
@@ -28,7 +28,7 @@ def calculate_f1_score(prediction: Prediction) -> Tuple[float, float, float, flo
     y_samples= prediction.h_samples
 
     if not gt_lanes or not pred_lanes:
-        return 0.0, 0.0, 0.0, 0.0
+        return 0.0, 0.0, 0.0
 
     try:
         accuracy, fp, fn = LaneEval.bench(
@@ -38,11 +38,7 @@ def calculate_f1_score(prediction: Prediction) -> Tuple[float, float, float, flo
             running_time=prediction.run_time,
         )
 
-        precision = 1.0 - fp
-        recall = 1.0 - fn
-        denom = precision + recall
-        f1_score = (2 * precision * recall / denom) if denom > 0 else 0.0
 
-        return accuracy, f1_score, precision, recall
+        return accuracy, fp, fn
     except Exception:
-        return 0.0, 0.0, 0.0, 0.0
+        return 0.0, 0.0, 0.0
