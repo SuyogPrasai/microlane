@@ -45,17 +45,34 @@ RATIO_COLS = {
     "mean_IOU", "mean_accuracy", "std_IOU", "std_accuracy",
     "min_IOU", "max_IOU", "min_accuracy", "max_accuracy",
 }
+
 TIME_COLS = {"mean_run_time", "std_run_time", "min_run_time", "max_run_time"}
+
+SORT_ALIASES = {
+    "IOU":      "mean_IOU",
+    "Accuracy": "mean_accuracy",
+    "Acc":      "mean_accuracy",
+    "FN":       "mean_fn",
+    "FP":       "mean_fp",
+    "Time":     "mean_run_time",
+}
 
 
 def fmt(col: str, val) -> str:
+
     if val == "" or val is None:
         return "—"
+
     try:
-        if col in RATIO_COLS:  return f"{float(val):.4f}"
-        if col in TIME_COLS:   return f"{float(val):.2f}"
+        if col in RATIO_COLS:
+            return f"{float(val):.4f}"
+
+        if col in TIME_COLS:
+            return f"{float(val):.2f}"
+
     except (TypeError, ValueError):
         pass
+
     return str(val)
 
 
@@ -63,25 +80,45 @@ def label(col: str) -> str:
     return COL_LABELS.get(col, col)
 
 
-def section(title: str):
-    bar = "─" * 60
-    click.echo(click.style(f"\n  {bar}", fg="bright_black"))
-    click.echo(click.style(f"  {title.upper()}", fg="white", bold=True))
-    click.echo(click.style(f"  {bar}", fg="bright_black"))
+def tag(lbl: str, value: str, color: str = "cyan"):
 
-
-def tag(label: str, value: str, color: str = "cyan"):
     click.echo(
-        f"  {click.style(f' {label} ', bg=color, fg='black', bold=True)}"
+        f"  {click.style(f' {lbl} ', bg=color, fg='black', bold=True)}"
         f"{click.style(f' {value}', fg='white')}"
     )
 
 
-def print_table(rows: list[dict], columns: list[str]):
+def resolve_sort(sort: str) -> str | None:
+
+    if sort is None:
+        return None
+
+    if sort in ALL_METRICS:
+        return sort
+
+    if sort in SORT_ALIASES:
+        return SORT_ALIASES[sort]
+
+    lower = sort.lower()
+
+    for alias, col in SORT_ALIASES.items():
+        if alias.lower() == lower:
+            return col
+
+    for col in ALL_METRICS:
+        if col.lower() == lower:
+            return col
+
+    return None
+
+
+def print_table(rows: list[dict], columns: list[str], sort_col: str | None = None):
+
     if not rows:
         return
 
     widths = {col: len(label(col)) for col in columns}
+
     for row in rows:
         for col in columns:
             widths[col] = max(widths[col], len(fmt(col, row.get(col, ""))))
@@ -90,17 +127,28 @@ def print_table(rows: list[dict], columns: list[str]):
         return left + mid.join("─" * (widths[c] + 2) for c in columns) + right
 
     def row_line(cells, header=False):
+
         parts = []
+
         for col, cell in zip(columns, cells):
+
             padded = cell.ljust(widths[col])
+
             if header:
-                padded = click.style(padded, bold=True, fg="white")
+                fg     = "yellow" if col == sort_col else "white"
+                padded = click.style(padded, bold=True, fg=fg)
+
             elif col in METRIC_COLS:
-                padded = click.style(padded, fg="cyan")
+                fg     = "yellow" if col == sort_col else "cyan"
+                padded = click.style(padded, fg=fg)
+
             else:
                 padded = click.style(padded, fg="bright_white")
+
             parts.append(f" {padded} ")
+
         pipe = click.style("│", fg="bright_black")
+
         return pipe + pipe.join(parts) + pipe
 
     def dim(s):
@@ -119,14 +167,15 @@ def print_table(rows: list[dict], columns: list[str]):
 
 
 @click.command()
-@click.option('--path',         '-p', required=True,  help='Path to the summary CSV file.',  metavar='FILE')
-@click.option('--dataset',      '-d', default=None,   help=f'Filter by dataset.',             metavar='NAME')
-@click.option('--model',        '-m', default=None,   help=f'Filter by model.',               metavar='NAME')
-@click.option('--augmentation', '-a', default=None,   help=f'Filter by augmentation.',        metavar='NAME')
-@click.option('--metric',             multiple=True,  help='Extra metric column(s) to show.', metavar='METRIC')
-def compare(path: str, dataset: str, model: str, augmentation: str, metric: tuple):
+@click.option('--path',         '-p', required=True, help='Path to the summary CSV file.',  metavar='FILE')
+@click.option('--dataset',      '-d', default=None,  help='Filter by dataset.',              metavar='NAME')
+@click.option('--model',        '-m', default=None,  help='Filter by model.',                metavar='NAME')
+@click.option('--augmentation', '-a', default=None,  help='Filter by augmentation.',         metavar='NAME')
+@click.option('--metric',             multiple=True, help='Extra metric column(s) to show.', metavar='METRIC')
+@click.option('--sort',               default='Accuracy', metavar='METRIC',
+              help='Sort largest → smallest. Accepts column names or aliases: IOU, Accuracy/Acc, FN, FP, Time.')
+def compare(path: str, dataset: str, model: str, augmentation: str, metric: tuple, sort: str):
     """Compare lane detection model results from a summary CSV."""
-
 
     try:
         df = pd.read_csv(path)
@@ -134,24 +183,17 @@ def compare(path: str, dataset: str, model: str, augmentation: str, metric: tupl
         click.echo(click.style(f"\n  ✗  File not found: {path}\n", fg="red", bold=True))
         raise SystemExit(1)
 
-
     active = [(k, v) for k, v in [("dataset", dataset), ("model", model), ("augmentation", augmentation)] if v]
 
     for k, v in active:
         df = df[df[k] == v]
-
-    if active:
-        for k, v in active:
-            tag(k.upper(), v, color="magenta")
-        click.echo()
-    else:
-        click.echo(click.style("  No filters applied — showing all rows.\n", fg="bright_black"))
 
     if df.empty:
         click.echo(click.style("  ✗  No records match the given filters.\n", fg="red", bold=True))
         raise SystemExit(0)
 
     invalid = [m for m in metric if m not in ALL_METRICS]
+
     if invalid:
         click.echo()
         for m in invalid:
@@ -161,8 +203,28 @@ def compare(path: str, dataset: str, model: str, augmentation: str, metric: tupl
     extra   = [m for m in metric if m in ALL_METRICS and m not in DEFAULT_METRICS]
     columns = [c for c in IDENTITY_COLS + DEFAULT_METRICS + extra if c in df.columns]
 
+    sort_col = resolve_sort(sort)
+
+    if sort is not None and sort_col is None:
+        click.echo(click.style(f"  ⚠  Unknown sort metric ignored: '{sort}'\n", fg="yellow"))
+
+    if sort_col is not None:
+
+        if sort_col not in df.columns:
+            click.echo(click.style(f"  ⚠  Sort column '{sort_col}' not present in CSV — ignored.\n", fg="yellow"))
+            sort_col = None
+
+        else:
+            df = df.sort_values(sort_col, ascending=False)
+
+            if sort_col not in columns:
+                columns.append(sort_col)
+
+            click.echo()
+
     rows = df[columns].to_dict(orient="records")
-    print_table(rows, columns)
+
+    print_table(rows, columns, sort_col=sort_col)
 
     click.echo(
         f"  {click.style(str(len(rows)), fg='green', bold=True)}"
