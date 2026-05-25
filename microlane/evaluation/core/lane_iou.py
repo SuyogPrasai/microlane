@@ -6,73 +6,73 @@ class LaneIoU:
 
     @staticmethod
     def lane_to_points(x_coords, y_samples):
-        """
-        Filter out invalid (negative) x points and return (x, y) pairs.
-        """
-        points = [(x, y) for x, y in zip(x_coords, y_samples) if x >= 0]
-        return points
+        return [(x, y) for x, y in zip(x_coords, y_samples) if x >= 0]
 
     @staticmethod
+    def _lane_mean_x(lane, y_samples):
+        xs = [x for x, _ in LaneIoU.lane_to_points(lane, y_samples)]
+        return np.mean(xs) if xs else None
+    
+    @staticmethod
     def build_polygon(lane_a, lane_b, y_samples):
-        """
-        Build a closed polygon from two lanes.
-        Traverse lane_a top→bottom, then lane_b bottom→top.
-        Returns a Shapely Polygon or None if not enough points.
-        """
         pts_a = LaneIoU.lane_to_points(lane_a, y_samples)
         pts_b = LaneIoU.lane_to_points(lane_b, y_samples)
 
         if len(pts_a) < 2 or len(pts_b) < 2:
             return None
 
-        # Polygon: left side top→bottom, right side bottom→top
         poly_points = pts_a + pts_b[::-1]
 
         try:
             poly = Polygon(poly_points)
             if not poly.is_valid:
-                poly = poly.buffer(0)  # fix self-intersections
+                poly = poly.buffer(0)
             return poly
         except Exception:
             return None
-
+    
     @staticmethod
-    def best_pair_polygon(lanes, y_samples):
-        """
-        From a list of lanes, find the pair that encloses the largest area.
-        Returns the best Polygon or None.
-        """
-        best_poly = None
-        best_area = 0.0
-
-        for lane_a, lane_b in combinations(lanes, 2):
-            poly = LaneIoU.build_polygon(lane_a, lane_b, y_samples)
-            if poly is None:
+    def ego_pair_polygon(lanes, y_samples, image_center_x):
+        left_candidate = None
+        right_candidate = None
+        
+        for lane in lanes:
+            mx = LaneIoU._lane_mean_x(lane, y_samples)
+            if mx is None:
                 continue
-            area = poly.area
-            if area > best_area:
-                best_area = area
-                best_poly = poly
+            
+            if mx < image_center_x:
+                if left_candidate is None or mx > left_candidate[0]:
+                    left_candidate = (mx, lane)
+            else:
+                if right_candidate is None or mx < right_candidate[0]:
+                    right_candidate = (mx, lane)        
+        
+        if left_candidate is None or right_candidate is None:
+            return None
 
-        return best_poly
-
+        return LaneIoU.build_polygon(
+            
+            left_candidate[1], right_candidate[1], y_samples
+        )
+    
+    
     @staticmethod
-    def compute_iou(pred, gt, y_samples):
-        """
-        Compute IoU between the best-pair polygon of pred lanes
-        and the best-pair polygon of gt lanes.
-        Returns float in [0, 1]. Returns 0 if either polygon is None.
-        """
-        gt_poly   = LaneIoU.best_pair_polygon(gt,   y_samples)
-        pred_poly = LaneIoU.best_pair_polygon(pred,  y_samples)
+    def compute_iou(
+        pred, gt, y_samples, image_center_x
+    ):
+    
+        gt_poly   = LaneIoU.ego_pair_polygon(gt,   y_samples, image_center_x)
+        pred_poly = LaneIoU.ego_pair_polygon(pred,  y_samples, image_center_x)
 
-        if gt_poly is None or pred_poly is None:
-            return 0.0
+        polygon_ok = (
+            gt_poly is not None and pred_poly is not None
+            and gt_poly.area > 0  and pred_poly.area > 0
+        )
 
-        intersection = gt_poly.intersection(pred_poly).area
-        union        = gt_poly.union(pred_poly).area
+        if polygon_ok:
+            intersection = gt_poly.intersection(pred_poly).area # type: ignore
+            union        = gt_poly.union(pred_poly).area # type: ignore
+            return 0.0 if union == 0 else intersection / union
 
-        if union == 0:
-            return 0.0
-
-        return intersection / union
+        return 0.0
