@@ -27,10 +27,10 @@ def summarize(path: str, csv: str):
 
                 records = search_records(df, dataset=dataset, model=model, augmentation=augmentation)
 
-                if not records:
+                if records is None or records.empty:
                     continue
 
-                group = pd.concat(records)
+                group = records
 
                 row = {
                     "dataset":       dataset,
