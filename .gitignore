@@ -214,3 +214,5 @@ results/**
 weights/
 weights/**
 .hidden-items.json
+.vscode/**
+.vscode/
