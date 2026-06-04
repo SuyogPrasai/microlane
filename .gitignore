@@ -210,7 +210,6 @@ __marimo__/
 # Models
 *.pth
 data/**
-results/**
 weights/
 weights/**
 .hidden-items.json
