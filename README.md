@@ -156,12 +156,12 @@ python scripts/visualize_converted.py \
 | **RLD-A** (UNet-ConvLSTM) | Sequence-based | UNet backbone with ConvLSTM to leverage temporal information across frames. |
 | **RLD-B** (SegNet-ConvLSTM) | Sequence-based | Variant of RLD-A using a SegNet backbone instead of UNet. |
 
-| Metric | Description |
-|---|---|
-| **Accuracy** | Proportion of correctly predicted lane points per image. |
-| **FP (False Positive)** | Rate of predicted lanes with no matching ground-truth lane. |
-| **FN (False Negative)** | Rate of ground-truth lanes that went undetected. |
-| **IOU** | Intersection over Union between the polygon formed by the two innermost predicted lanes (ego-lane) and its ground-truth counterpart. |
+| Metric | Source | Description |
+|---|---|---|
+| **Accuracy** | TuSimple | Proportion of correctly predicted lane points per image. |
+| **FP (False Positive)** | TuSimple | Rate of predicted lanes with no matching ground-truth lane. |
+| **FN (False Negative)** | TuSimple | Rate of ground-truth lanes that went undetected. |
+| **IOU** | Custom | Intersection over Union between the polygon formed by the two innermost predicted lanes (ego-lane) and its ground-truth counterpart. |
 
 | Augmentation | Description |
 |---|---|
