@@ -161,7 +161,7 @@ python scripts/visualize_converted.py \
 | **Accuracy** | TuSimple | Proportion of correctly predicted lane points per image. |
 | **FP** | TuSimple | Rate of predicted lanes with no matching ground-truth lane. |
 | **FN** | TuSimple | Rate of ground-truth lanes that went undetected. |
-| **IOU** | Custom | Intersection over Union between the polygon formed by the two innermost predicted lanes (ego-lane) and its ground-truth counterpart. |
+| **IOU** | Custom | IoU between the predicted ego-lane polygon and its ground-truth counterpart.|
 
 | Augmentation | Description |
 |---|---|
