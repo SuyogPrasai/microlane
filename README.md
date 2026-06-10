@@ -1,7 +1,5 @@
 # Microlane Pipeline
 
-// OverView
-
 ![Banner](banner.png)
 
 ---
@@ -30,6 +28,9 @@
 
 ## Key Features
 
+Key features include a modular architecture that makes it straightforward to add new models, datasets, or metrics — and the pipeline is general enough to work with ML models beyond lane detection. Each model runs in a dedicated Docker container with a FastAPI endpoint, ensuring isolation and reproducibility.
+
+The pipeline implements the standardized TuSimple benchmark alongside a flexible augmentation module, allowing easy simulation of real-world image conditions. A CLI interface exposes the evaluation and summary features, with room to grow into a fully-featured tool. Custom scripts are also included to convert CVAT for Images XML annotations into TuSimple format.
 ## Repository Structure
 
 ```
@@ -71,6 +72,7 @@
       eval (poetry env activate)
       poetry install
       ```
+   3. You can need to install the package using `pip install -e .`  command to use the CLI tools developed for evaluation and summarization.
 
 - ### Configuration
    - Before running the Experiments, make sure to download all the dataset in your local machine. Have the Experiment Output Directory Structure Ready, and Configure the `config.yaml` ( The main file for all the options that can be set for the experiments )
