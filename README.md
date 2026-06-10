@@ -26,7 +26,7 @@
 
 ## Architecture
 
-![Banner](architecture.svg)
+![Banner](architecture.png)
 
 ## Key Features
 
