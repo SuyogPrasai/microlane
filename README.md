@@ -40,13 +40,14 @@ This modular architecture makes the pipeline easy to extend — it can evaluate 
 
 ## Key Features
 
-- **Modular Architecture** — Easily extendable to include new datasets, models, and metrics.
-- **Containerized Models** — Each model runs in a dedicated Docker container with a FastAPI interface, ensuring environment isolation and reproducibility.
-- **Standardized Evaluation** — Implements the official TuSimple benchmark (Accuracy, FP, FN) and an ego-lane IoU metric.
-- **Image Augmentation** — A flexible augmentation module simulates varied driving conditions: lighting changes, motion blur, camera shake, and more.
-- **Command-Line Interface** — Streamlined CLI tools for running batch evaluations and aggregating results into a single CSV.
-- **Data Processing** — Includes scripts to convert custom CVAT-annotated datasets into TuSimple-compatible format.
-
+| Feature | Description |
+|---|---|
+| **Modular Architecture** | Easily extendable to include new datasets, models, and metrics. |
+| **Containerized Models** | Each model runs in a dedicated Docker container with a FastAPI interface, ensuring environment isolation and reproducibility. |
+| **Standardized Evaluation** | Implements the official TuSimple benchmark (Accuracy, FP, FN) and an ego-lane IoU metric. |
+| **Image Augmentation** | A flexible augmentation module simulates varied driving conditions: lighting changes, motion blur, camera shake, and more. |
+| **Command-Line Interface** | Streamlined CLI tools for running batch evaluations and aggregating results into a single CSV. |
+| **Data Processing** | Includes scripts to convert custom CVAT-annotated datasets into TuSimple-compatible format. |
 ---
 
 ## Repository Structure
