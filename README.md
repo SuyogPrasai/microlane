@@ -1,11 +1,11 @@
 # Microlane Pipeline
 
-> A modular, containerized ML pipeline for evaluating lane detection models under small-scale (1/10) RC car conditions.
->
-> Full details are discussed in the associated paper: [link_to_paper]
+This project contains a custom module ML pipeline for evaluating multiple lane detection models on smaller scale 1/10 conditions
+
+Full details are discussed in the associated paper: [link_to_paper]
 
 > [!IMPORTANT]
-> The pipeline evaluates **4 models** across **3 datasets** with **5 augmentation presets**, processing ~**81,000 images** to generate ~**27,000 predictions**.
+>  We use 4 different lane detection models, across 3 different datasets, with 5 different augmentation features to process about **81,000** Images to generate about **27,000 predictions**
 
 ---
 
@@ -32,9 +32,12 @@
 
 ## Overview
 
-Microlane uses Docker containerization to compare lane detection models that have differing dependencies and development environments. Each model runs in its own container, exposed via a FastAPI endpoint, keeping environments isolated and reproducible.
 
-This modular architecture makes the pipeline easy to extend — it can evaluate not just lane detection models, but any ML model that can be wrapped behind a FastAPI interface.
+Our pipeline uses docker containerization to compare different machine learning models that require different dependencies to run, and were originally written in different development envrionments. We use FastAPI as an endpoint to communicate with the model running in the docker conainer.
+
+This modular approach makes it very easy to add aditional models, metrics, or any other feature to the pipeline. That is why this pipeline can be used to run evaluations not just on lane detection models, but also on other types of ML models.
+
+
 
 ---
 
