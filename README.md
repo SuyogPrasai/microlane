@@ -26,9 +26,11 @@
 
 ## Architecture
 
+![Banner](architecture.svg)
+
 ## Key Features
 
-Key features include a modular architecture that makes it straightforward to add new models, datasets, or metrics — and the pipeline is general enough to work with ML models beyond lane detection. Each model runs in a dedicated Docker container with a FastAPI endpoint, ensuring isolation and reproducibility.
+Key features include a modular architecture that makes it straightforward to add new models, datasets, or metrics. Furthermore, the pipeline is general enough to work with ML models beyond lane detection. Each model runs in a dedicated Docker container with a FastAPI endpoint, ensuring isolation and reproducibility.
 
 The pipeline implements the standardized TuSimple benchmark alongside a flexible augmentation module, allowing easy simulation of real-world image conditions. A CLI interface exposes the evaluation and summary features, with room to grow into a fully-featured tool. Custom scripts are also included to convert CVAT for Images XML annotations into TuSimple format.
 ## Repository Structure
