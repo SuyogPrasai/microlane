@@ -1,17 +1,14 @@
 # Microlane Pipeline
 
-This project contains a custom module ML pipeline for evaluating multiple lane detection models on smaller scale 1/10 conditions
+// OverView
 
-Full details are discussed in the associated paper: [link_to_paper]
-
-> [!IMPORTANT]
->  We use 4 different lane detection models, across 3 different datasets, with 5 different augmentation features to process about **81,000** Images to generate about **27,000 predictions**
+![Banner](banner.png)
 
 ---
 
 ## Table of Contents
 
-1. [Overview](#overview)
+1. [Architecture](#architecture)
 2. [Key Features](#key-features)
 3. [Repository Structure](#repository-structure)
 4. [Getting Started](#getting-started)
@@ -20,38 +17,18 @@ Full details are discussed in the associated paper: [link_to_paper]
    - [Configuration](#configuration)
 5. [Data Preparation](#data-preparation)
 6. [Usage](#usage)
-   - [Running Experiments](#1-running-experiments)
-   - [Evaluating Results](#2-evaluating-results)
-   - [Summarizing Results](#3-summarizing-results)
-   - [Analyzing and Graphing](#4-analyzing-and-graphing)
-7. [Implemented Models](#implemented-models)
-8. [Evaluation Metrics](#evaluation-metrics)
-9. [License](#license)
+   - [Running Experiments](#running-experiments)
+   - [Evaluating Results](#evaluating-results)
+   - [Summarizing Results](#summarizing-results)
+   - [Analyzing and Graphing](#analyzing-and-graphing)
+7. [Models, Metrics and Filters](#models-metrics-and-filters)
+8. [Contribution and License](#contribution-and-license)
 
 ---
 
-## Overview
-
-
-Our pipeline uses docker containerization to compare different machine learning models that require different dependencies to run, and were originally written in different development envrionments. We use FastAPI as an endpoint to communicate with the model running in the docker conainer.
-
-This modular approach makes it very easy to add aditional models, metrics, or any other feature to the pipeline. That is why this pipeline can be used to run evaluations not just on lane detection models, but also on other types of ML models.
-
-
-
----
+## Architecture
 
 ## Key Features
-
-| Feature | Description |
-|---|---|
-| **Modular Architecture** | Easily extendable to include new datasets, models, and metrics. |
-| **Containerized Models** | Each model runs in a dedicated Docker container with a FastAPI interface, ensuring environment isolation and reproducibility. |
-| **Standardized Evaluation** | Implements the official TuSimple benchmark (Accuracy, FP, FN) and an ego-lane IoU metric. |
-| **Image Augmentation** | A flexible augmentation module simulates varied driving conditions: lighting changes, motion blur, camera shake, and more. |
-| **Command-Line Interface** | Streamlined CLI tools for running batch evaluations and aggregating results into a single CSV. |
-| **Data Processing** | Includes scripts to convert custom CVAT-annotated datasets into TuSimple-compatible format. |
----
 
 ## Repository Structure
 
@@ -77,137 +54,41 @@ This modular approach makes it very easy to add aditional models, metrics, or an
 
 ## Getting Started
 
-### Prerequisites
+- ### Prerequisites
+   - You Need to have **Python 3.12.10** to run this code. Other Python versions have not been tested on this code. Along with that, you need to install **Docker Desktop** to run containers in your local machine. Also, install poetry and **pyenv** for **python** version and dependency management.
 
-- **Python 3.12.10** — The Python version used during development.
-- [Docker](https://www.docker.com/get-started) — Required for running lane detection model containers.
-- [Poetry](https://python-poetry.org/docs/#installation) — Used for dependency management.
+- ### Installation
 
-### Installation
+   1. First, install the [prerequisites](#prerequisites) in you local machine, and clone this repository.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/suyogprasai/microlane.git
-   cd microlane
-   ```
+      ```bash
+      git clone https://github.com/suyogprasai/microlane.git
+      cd microlane
+      ```
+   2. Then, set the correct Python Version ( 3.12.10 ), and install dependencies after activating the virtual enviornment using poetry
+      ```bash
+      pyenv local 3.12.10
+      eval (poetry env activate)
+      poetry install
+      ```
 
-2. Set the correct Python version and activate the Poetry environment:
-   ```bash
-   pyenv local 3.12.10
-   eval (poetry env activate)
-   ```
-
-3. Install dependencies:
-   ```bash
-   poetry install
-   ```
-
-### Configuration
-
-Before running experiments, configure `config.yaml` — the central file for dataset paths, experiment output directories, and model settings.
-
-- Set `path` and `annotation_file` for both `tusimple` and `microlane` datasets to match your local filesystem.
-- Set `experiment_directory` under `experiment` to your desired output location.
-
----
+- ### Configuration
+   - Before running the Experiments, make sure
 
 ## Data Preparation
 
-This project uses the **TuSimple** dataset and a custom **MicroLane** dataset. The MicroLane dataset is originally annotated in CVAT's XML format and must be converted to TuSimple's JSON-line format before use.
-
-**Step 1 — Convert MicroLane to TuSimple format:**
-
-```bash
-poetry run python scripts/microlane_to_tusimple.py \
-  --annotations /path/to/your/cvat_annotations.xml \
-  --microlane /path/to/your/unmodified_microlane_images \
-  --modified /path/to/your/modified_microlane_images \
-  --output ./results/normalized_microlane
-```
-
-This produces a `normalized_microlane/` directory with resized images and an `annotations.json` file. Update `config.yaml` to point to these generated assets.
-
-**Step 2 — Visualize converted data (optional):**
-
-Verify the conversion by overlaying ground truth lanes on the converted images:
-
-```bash
-poetry run python scripts/visualize_converted.py \
-  --images ./results/normalized_microlane/microlane \
-  --annotations ./results/normalized_microlane/annotations.json \
-  --output ./results/visualized_microlane
-```
-
----
-
 ## Usage
 
-### 1. Running Experiments
+- ### Running Experiments
 
-Experiments are run through Jupyter notebooks, which handle data loading, augmentation, and model inference.
+- ### Evaluating Results
 
-| Model Type | Notebook |
-|---|---|
-| Single-frame (LaneNet, UFLD) | `scripts/inference.ipynb` |
-| Sequence-based (RLD-A, RLD-B) | `scripts/sequence_inference.ipynb` |
+- ### Summarizing Results
 
-Before running, edit the configuration block at the top of the notebook to select the desired `MODEL`, `DATASET`, and `AUGMENTATION` preset. The notebook will automatically start the required Docker container and store raw results and visualizations in the configured experiment directory.
+- ### Analyzing and Graphing
 
-### 2. Evaluating Results
+## Models, Metrics and Filters
 
-After running experiments, process all prediction files into a single CSV:
+## Contribution and License
 
-```bash
-microlane evaluate --path /path/to/experiments/root --csv ./results/evaluation.csv
-```
-
-This recursively scans the experiment directory, computes metrics for each prediction, and appends results to `evaluation.csv`.
-
-### 3. Summarizing Results
-
-Aggregate the evaluation CSV to get mean and standard deviation across experiment groups:
-
-```bash
-microlane summarize --path ./results/evaluation.csv --csv ./results/summary.csv
-```
-
-### 4. Analyzing and Graphing
-
-Use `scripts/graphing.ipynb` to load `evaluation.csv` and generate visualizations:
-
-- **Bar charts** — Compare model and augmentation performance.
-- **Line graphs** — Cumulative accuracy over samples.
-- **Radar charts** — False Negative vs. False Positive rate comparisons.
-
----
-
-## Implemented Models
-
-| Model | Type | Description |
-|---|---|---|
-| **LaneNet** | Single-frame | Segmentation-based model using binary and instance segmentation to identify lanes. |
-| **UFLD** (Ultra-Fast Lane Detection) | Single-frame | Formulates lane detection as a row-based classification task for high-speed inference. |
-| **RLD-A** (UNet-ConvLSTM) | Sequence-based | Uses a UNet backbone with a ConvLSTM layer to leverage temporal information across frames. |
-| **RLD-B** (SegNet-ConvLSTM) | Sequence-based | A variant of RLD-A using a SegNet backbone instead of UNet. |
-
----
-
-## Evaluation Metrics
-
-### TuSimple Benchmark
-
-| Metric | Description |
-|---|---|
-| **Accuracy** | Average proportion of correctly predicted lane points per image. |
-| **FP (False Positive)** | Rate of predicted lanes that do not correspond to any ground-truth lane. |
-| **FN (False Negative)** | Rate of ground-truth lanes that were not detected. |
-
-### Ego-Lane IoU
-
-Calculates the Intersection over Union between the polygon formed by the two innermost predicted lanes (the ego-lane) and the corresponding ground-truth polygon. This measures how accurately the drivable area is detected.
-
----
-
-## License
-
-This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
+If you want to contribute to this project, then feel free to fork and add the nescesasry adjustments. This script is designed in a way such that it works not just lane detection models, but  on all kinds of machine learning models we choose. This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
