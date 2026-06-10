@@ -152,15 +152,15 @@ python scripts/visualize_converted.py \
 | Model | Type | Description |
 |---|---|---|
 | **LaneNet** | Single-frame | Segmentation-based model using binary and instance segmentation. |
-| **UFLD** (Ultra-Fast Lane Detection) | Single-frame | Formulates lane detection as row-based classification for high-speed inference. |
-| **RLD-A** (UNet-ConvLSTM) | Sequence-based | UNet backbone with ConvLSTM to leverage temporal information across frames. |
-| **RLD-B** (SegNet-ConvLSTM) | Sequence-based | Variant of RLD-A using a SegNet backbone instead of UNet. |
+| **UFLD** | Single-frame | Formulates lane detection as row-based classification for high-speed inference. |
+| **RLD-A** | Sequence-based | UNet backbone with ConvLSTM to leverage temporal information across frames. |
+| **RLD-B** | Sequence-based | Variant of RLD-A using a SegNet backbone instead of UNet. |
 
 | Metric | Source | Description |
 |---|---|---|
 | **Accuracy** | TuSimple | Proportion of correctly predicted lane points per image. |
-| **FP (False Positive)** | TuSimple | Rate of predicted lanes with no matching ground-truth lane. |
-| **FN (False Negative)** | TuSimple | Rate of ground-truth lanes that went undetected. |
+| **FP** | TuSimple | Rate of predicted lanes with no matching ground-truth lane. |
+| **FN** | TuSimple | Rate of ground-truth lanes that went undetected. |
 | **IOU** | Custom | Intersection over Union between the polygon formed by the two innermost predicted lanes (ego-lane) and its ground-truth counterpart. |
 
 | Augmentation | Description |
