@@ -148,7 +148,7 @@ python scripts/visualize_converted.py \
 
 ## Models, Metrics and Filters
 
-- Our Pipeline Uses 4 different models for now. 2 are single framed, and 2 are sequence based models. The following table gives more detail on each model.
+- Our pipeline evaluates four models, two single-frame and two sequence-based, as described below.
 
 | Model | Type | Description |
 |---|---|---|
@@ -157,7 +157,7 @@ python scripts/visualize_converted.py \
 | **RLD-A** | Sequence-based | UNet backbone with ConvLSTM to leverage temporal information across frames. |
 | **RLD-B** | Sequence-based | Variant of RLD-A using a SegNet backbone instead of UNet. |
 
-- Our Pipeline Uses 4 different metrics for now. The Accuracy, FP, and FN metrics are derived from the TuSimple Benchmark, and the IOU is a custom IOU implmentation based on ego lanes.
+- Our pipeline employs four metrics, three sourced from the TuSimple benchmark and one custom ego-lane IOU, as described below.
 
 | Metric | Source | Description |
 |---|---|---|
@@ -166,7 +166,7 @@ python scripts/visualize_converted.py \
 | **FN** | TuSimple | Rate of ground-truth lanes that went undetected. |
 | **IOU** | Custom | IoU between the predicted ego-lane polygon and its ground-truth counterpart.|
 
-- The following Table showcases the different augmentation modes used during this experiment.
+- Our pipeline tests five augmentation presets, ranging from no augmentation to motion and lighting variants, as described below.
 
 | Augmentation | Description |
 |---|---|
