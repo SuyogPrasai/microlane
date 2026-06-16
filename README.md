@@ -210,7 +210,8 @@ python scripts/visualize_converted.py \
 | **Lighting-B** | Brightness increase of 40% (all RGB channels +40% of 255). |
 | **Lighting-D** | Brightness decrease of 40% (all RGB channels −40% of 255). |
 
-
+> [!IMPORTANT]
+> This project is designed to be model-agnostic — while it currently benchmarks lane detection models, the architecture generalizes to any ML model running in a Docker container. We welcome contributions, feedback, and ideas for extending it into a broader ML evaluation framework.
 
 ## Contribution and License
 
