@@ -1,7 +1,20 @@
 # Microlane Pipeline
 
-![Banner](banner.png)
 
+<div align="center">
+
+[![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](Collaborators.md#collaborators "Donate")
+[![GitHub License](https://img.shields.io/github/license/suyogprasai/microlane?style=for-the-badge)](https://github.com/suyogprasai/microlane/blob/main/LICENSE "License")
+
+[![Commits](https://img.shields.io/github/commit-activity/m/suyogprasai/microlane?label=commits&style=for-the-badge)](https://github.com/suyogprasai/microlane/commits "Commit History")
+[![Last Commit](https://img.shields.io/github/last-commit/suyogprasai/microlane?style=for-the-badge&label=last+commit)](https://github.com/suyogprasai/microlane/commits/main "Last activity")
+
+</div>
+
+<div align="center">
+
+![Banner](banner.png)
+</div>
 The Microlane Pipeline is a machine learning pipelines that evaluates different lane detection models in 1/10 conditions. This pipeline has extensive capabilities to modify the input to the model, ensure smooth running of the models through docker containerization, running evaluations through multiple metrics, and store the results in a safe json format.
 
 
