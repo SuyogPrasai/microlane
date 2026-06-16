@@ -2,7 +2,11 @@
 
 ![Banner](banner.png)
 
-The Microlane Pipeline is a modular evaluation pipeline used for evaluating lane detection models on small scale 1/10 conditions for self driving cars. This pipeline runs multiple deep learning models in containerized environments, processing about 81,000 images to generate around 27,000 predictions. Also, this pipeline systematically applies environmental augmentations like blur, rotation, and lighting variation to evaluate model robustness at the lower camera heights and higher vibrations characteristic of 1/10 scale RC cars.
+The Microlane Pipeline is a machine learning pipelines that evaluates different lane detection model in 1/10 conditions. This pipeline has extensive capabilities to modify the input to the model, ensure smooth running of the models through docker containerization, running evaluations through multiple metrics, and store the results in a safe json format.
+
+This pipeline was developed during the writing of the paper — **Microlane: Evaluating the Robustness of Lane Detection Models in a 1/10-scale Car**
+
+We evaluated 4 different lane detection models on standard and custom image based lane detection datasets on 5 five different augmentation modes, generating about 27,000 predictions by processing about 81,000 images.
 
 ---
 
