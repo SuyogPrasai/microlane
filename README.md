@@ -33,6 +33,8 @@ We evaluated 4 different lane detection models on standard and custom image base
 ## Architecture
 
 ![Banner](architecture.png)
+<p align="center"><i>Figure: Architecture Diagram for the Microlane Pipeline</i></p>
+
 
 - Three datasets, TuSimple, Microlane, and Modified Microlane, are normalized into a common TuSimple JSON-line format before being passed into the pipeline.
 - Images are routed into a Docker container hosting one of four interchangeable models, LaneNet, UFLD, RLD-A, or RLD-B, each exposed via a FastAPI endpoint.
