@@ -129,6 +129,10 @@ python scripts/visualize_converted.py \
 
    ***Note***: We had to manually change the value for each result that we make, so we had to change the variables about 60 times manually.
 
+![Example](example.png)
+<p align="center"><i>Figure: Code setup while running the experiments</i></p>
+
+
 
 - ### Evaluating Results
 
